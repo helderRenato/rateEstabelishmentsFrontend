@@ -1,0 +1,87 @@
+.content form{
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.content form input, .content form select{
+    background-color: #F5F5F5;
+    border: none;
+    outline: hidden;
+    padding: 10px;
+    height: 50px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.content form > div{
+    display: flex;
+    flex-direction: row;
+}
+
+.content form > div > div {
+    display: flex;
+    flex-direction: column;
+    margin-right: 30px ;
+}
+
+
+
+.container{
+    margin: 50px auto 0;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 300px;
+}
+
+.content{
+    width: 100%;
+}
+
+.criarContaButton{
+    border: none;
+    border-radius: 10px;
+    background-color: #F29E9E;
+    color: #ffffff;
+    font-weight: bold;
+    height: 60px;
+}
+
+.criarContaButton:hover{
+    background-color: #f5b5b5;
+    transition: 0.5s;
+}
+
+.content label#thumbnail{
+    margin-bottom: 20px;
+    border: 1px dashed #ddd;
+    background-size: cover;
+    cursor: pointer;
+    height: 160px;
+
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+}
+
+.content label#thumbnail input{
+    display: none;
+}
+
+.content label#thumbnail.hasthumbnail {
+    border : 0;
+}
+
+.content label#thumbnail.hasthumbnail img{
+    display : none;
+}
+
+@media screen and (max-width: 450px) {
+    .content form > div{
+        display: flex;
+        flex-direction: column;
+    }
+}

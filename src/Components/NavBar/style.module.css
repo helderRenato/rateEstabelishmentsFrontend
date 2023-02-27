@@ -1,0 +1,35 @@
+.signup{
+    color: #ffffff;
+    font-weight: bold;
+    background-color: #F29E9E;
+    border-radius: 10px;
+    width: 80px;
+    text-align: center;
+}
+
+
+.signup:hover{
+    background-color: #f8b3b3;
+}
+
+.cadastro{
+    background-color: #F29E9E;
+    margin: 10%;
+    text-align: center;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.cadastro:hover{
+    background-color: #f8b3b3;
+    color: #ffffff;
+    transition: 0.5s;
+}
+
+.decisao{
+    display: flex;
+    flex-direction: column;
+}
