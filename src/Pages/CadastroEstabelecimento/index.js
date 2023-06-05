@@ -7,9 +7,49 @@ import Footer from "../../Components/Footer";
 import coolStars from "../../assets/cool_stars.svg"
 import camera from "../../assets/camera.svg"
 
-export default function CadastroEstabelecimento(){
+import axios from 'axios';
+
+const DistritoModel = {
+    distrito: "",
+    codigoine: ""
+}
+
+
+
+    const App = () => {
+        useEffect(() => {
+          document.addEventListener('deviceready', onDeviceReady, false);
+        }, []);
+      
+        const onDeviceReady = () => {
+          const formulario = document.getElementById('formulario');
+      
+          if (formulario) {
+            formulario.addEventListener('submit', handleSubmit);
+          }
+        };
+      
+        const handleSubmit = (event) => {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+      
+          axios({
+            method: 'POST',
+            // Por aqui o sitio onde por o utilizador
+            url: 'http://localhost:3000/avaliador',
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+            .then((response) => {
+              alert(response.data);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        };
+    
     const [thumbnail, setThumbnail] = useState(null);
-    const [distritos, setDistritos] = useState([])
+    const [distritos, setDistritos] = useState([DistritoModel])
 
     const preview = useMemo( () => {
         return thumbnail ? URL.createObjectURL(thumbnail) : null;
@@ -31,7 +71,6 @@ export default function CadastroEstabelecimento(){
         getDistritos()
     }, [])
 
-
     return(
         <>
             <NavBar></NavBar>
@@ -46,7 +85,7 @@ export default function CadastroEstabelecimento(){
                     <input type = "file" onChange = {event => setThumbnail(event.target.files[0])}></input>
                     <img src = {camera} alt ="Select img"></img>
                 </label>
-                    <form>
+                    <form id="formulario" method="post">
                      
 
                         <label htmlFor="email">Email*</label>
@@ -61,11 +100,10 @@ export default function CadastroEstabelecimento(){
                         <div>
                             <div>
                                 <label htmlFor="tipo">Tipo*</label>
-                                <select>
+                                <select defaultValue={""}>
                                     <optgroup>
-                                        <option selected={true}>Selecione o tipo</option>
-                                        <option>Hotel</option>
-                                        <option>Restaurante</option>
+                                        <option value="Hotel">Hotel</option>
+                                        <option value="Restaurante">Restaurante</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -74,10 +112,12 @@ export default function CadastroEstabelecimento(){
                                 <label htmlFor="distrito">Distrito*</label>
                                 <select>
                                     <optgroup>
-                                        <option selected={true}>Selecione o distrito</option>
+                                        <option value={true}>Selecione o distrito</option>
 
-                                        {distritos.map(distritos => 
-                                            <option>{distritos}</option>    
+                                        {distritos.map(distritos =>{ 
+                                            console.log(distritos.distrito)
+                                            return <option key={distritos.distrito}>{distritos.distrito}</option>
+                                        }    
                                         )}
                                     </optgroup>
                                 </select>
@@ -96,4 +136,6 @@ export default function CadastroEstabelecimento(){
             <Footer></Footer>
         </>
     )
-}
+};
+
+export default App;
