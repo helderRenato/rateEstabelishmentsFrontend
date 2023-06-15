@@ -29,7 +29,7 @@ const App = () => {
     axios({
       method: 'POST',
       // Por aqui o sitio onde por o utilizador
-      url: 'http://localhost:3000/avaliador',
+      url: 'https://localhost:7045/User/Create',
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
     })

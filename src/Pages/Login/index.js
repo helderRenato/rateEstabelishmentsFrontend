@@ -13,7 +13,7 @@ export default function Login(){
 
             <div className={style.container}>
                 <div className={style.content}>
-                    <form >
+                    <form id="formulario" method="get">
                         
                         <label htmlFor="email">Email*</label>
                         <input type={"email"} id="email" placeholder="Insira aqui o seu email"></input>
