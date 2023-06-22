@@ -37,11 +37,12 @@ const App = () => {
         formData.append('Address', address);
         formData.append('TypeEstablishment', typeestablishment);
         formData.append('File', thumbnail);
+        formData.append('Phone', phone);
 
         axios({
             method: 'POST',
             // Por aqui o sitio onde por o estabelecimento
-            url: 'https://localhost:7045/EstablishmentTransport/create',
+            url: 'https://localhost:7045/EstaApi/register',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },
         })
@@ -62,6 +63,7 @@ const App = () => {
     const [city, setCity] = useState(null);
     const [address, setAddress] = useState(null);
     const [typeestablishment, setTypeEstablishment] = useState(null);
+    const [phone, setPhone] = useState(null);
     
     const preview = useMemo(() => {
         return thumbnail ? URL.createObjectURL(thumbnail) : null;
@@ -108,6 +110,9 @@ const App = () => {
 
                         <label htmlFor="nome">Nome do Estabelecimento*</label>
                         <input type={"text"} id="nome" value={name} onChange={(evt) => { setName(evt.target.value) }}></input>
+
+                        <label htmlFor="phone">Telémovel*</label>
+                        <input type={"text"} id="phone" value={phone} onChange={(evt) => { setPhone(evt.target.value) }}></input>
 
                         <div>
                             <div>

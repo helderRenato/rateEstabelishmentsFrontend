@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import NavBar from "../../Components/NavBar";
 import style from "./style.module.css"
 
@@ -10,7 +10,8 @@ import Footer from "../../Components/Footer";
 import axios from 'axios';
 
 const App = () => {
-  useEffect(() => {
+  
+  /*useEffect(() => {
     document.addEventListener('deviceready', onDeviceReady, false);
   }, []);
 
@@ -20,26 +21,39 @@ const App = () => {
     if (formulario) {
       formulario.addEventListener('submit', handleSubmit);
     }
-  };
+  };*/
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    //const formData = new FormData();
+    //formData.append('Email', email);
+    //formData.append('Password', password);
+    //formData.append('Username', username);
+    
+    const user = {
+      Email: email,
+      Password: password,
+      Username: username
+    }
 
     axios({
       method: 'POST',
       // Por aqui o sitio onde por o utilizador
-      url: 'https://localhost:7045/User/Create',
-      data: formData,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      url: 'https://localhost:7045/UserApi/register',
+      data: user,
+      headers: { 'Content-Type': 'application/json' },
     })
       .then((response) => {
         alert(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data);
       });
   };
+
+  const [username, setUsername] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState(null);
 
   return(
     <>
@@ -48,15 +62,15 @@ const App = () => {
             <div className={style.content}>
                 <form id="formulario" method="post">
                     <label htmlFor="username">Username*</label>
-                    <input type={"username"} id="username"></input>
+                    <input type={"username"} id="username" value={username} onChange={(evt) => { setUsername(evt.target.value) }}></input>
 
                     <label htmlFor="email">Email*</label>
-                    <input type={"email"} id="email" placeholder="Insira aqui o seu email"></input>
+                    <input type={"email"} id="email" value={email} onChange={(evt) => { setEmail(evt.target.value) }} placeholder="Insira aqui o seu email"></input>
 
                     <label htmlFor="password">Password*</label>
-                    <input type={"password"} id="password"></input>
+                    <input type={"password"} id="password" value={password} onChange={(evt) => { setPassword(evt.target.value) }}></input>
 
-                    <button type={"submit"} className={style.criarContaButton}>Criar Conta</button>
+                    <button type={"submit"} onClick={(evt) => handleSubmit(evt)} className={style.criarContaButton}>Criar Conta</button>
                     
                 </form>
             </div>
