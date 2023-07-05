@@ -1,0 +1,45 @@
+.content form{
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.content form input{
+    background-color: #F5F5F5;
+    border: none;
+    outline: hidden;
+    padding: 10px;
+    height: 50px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+
+
+.container{
+    margin: 150px auto 0;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 300px;
+}
+
+.content{
+    width: 100%;
+}
+
+.iniciarSessaoButton{
+    border: none;
+    border-radius: 10px;
+    background-color: #F29E9E;
+    color: #ffffff;
+    font-weight: bold;
+    height: 60px;
+}
+
+.iniciarSessaoButton:hover{
+    background-color: #f5b5b5;
+    transition: 0.5s;
+}

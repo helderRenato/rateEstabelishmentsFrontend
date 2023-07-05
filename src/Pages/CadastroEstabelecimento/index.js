@@ -42,7 +42,7 @@ const App = () => {
         axios({
             method: 'POST',
             // Por aqui o sitio onde por o estabelecimento
-            url: 'https://localhost:7045/EstaApi/register',
+            url: 'https://localhost:7045/api/establishmentapi/register',
             data: formData,
             headers: { 'Content-Type': 'multipart/form-data' },
         })

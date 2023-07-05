@@ -23,13 +23,12 @@ const App = () => {
         axios({
             method: 'POST',
             // Por aqui o sitio onde por o utilizador
-            url: 'https://localhost:7045/api/userapi/login',
+            url: 'https://localhost:7045/api/establishmentapi/login',
             data: user,
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
                 alert(response.data);
-                setLoggedin(true);
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -38,7 +37,7 @@ const App = () => {
 
     const [password, setPassword] = useState(null);
     const [email, setEmail] = useState(null);
-    const [loggedin, setLoggedin] = useState(false);
+
 
 
     return (

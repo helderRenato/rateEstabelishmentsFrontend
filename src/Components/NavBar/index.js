@@ -36,7 +36,8 @@ export default function NavBar(){
                     <Nav.Link href="#pricing">Sobre Nós</Nav.Link>
                 </Nav>
                 <Nav>
-                    <Nav.Link href="/login">Login</Nav.Link>
+                    <Nav.Link href="/login">Login Como Utilizador</Nav.Link>
+                    <Nav.Link href="/loginEst">Login Como Estabelecimento</Nav.Link>
                     <Nav.Link href="#memes" className={style.signup} onClick={handleShow}>SignUP</Nav.Link>
                 </Nav>
                 </Navbar.Collapse>

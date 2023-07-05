@@ -39,7 +39,7 @@ const App = () => {
     axios({
       method: 'POST',
       // Por aqui o sitio onde por o utilizador
-      url: 'https://localhost:7045/UserApi/register',
+      url: 'https://localhost:7045/api/userapi/register',
       data: user,
       headers: { 'Content-Type': 'application/json' },
     })
