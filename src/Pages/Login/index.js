@@ -6,14 +6,12 @@ import style from "./style.module.css"
 import Footer from "../../Components/Footer";
 import axios from 'axios';
 
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
-        //const formData = new FormData();
-        //formData.append('Email', email);
-        //formData.append('Password', password);
-        //formData.append('Username', username);
+        
 
         const user = {
             Email: email,
@@ -22,14 +20,18 @@ const App = () => {
 
         axios({
             method: 'POST',
-            // Por aqui o sitio onde por o utilizador
+            
             url: 'https://localhost:7045/api/userapi/login',
             data: user,
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
                 alert(response.data);
-                setLoggedin(true);
+                setUser(response.data);
+                localStorage.setItem('user', response.data);
+                
+                console.log(response.data);
+                nav("/avaliar");
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -38,7 +40,8 @@ const App = () => {
 
     const [password, setPassword] = useState(null);
     const [email, setEmail] = useState(null);
-    const [loggedin, setLoggedin] = useState(false);
+    const [user, setUser] = useState(null);
+    const nav = useNavigate();
 
 
     return (

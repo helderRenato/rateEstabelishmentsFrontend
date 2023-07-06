@@ -6,6 +6,7 @@ import style from "./style.module.css"
 import Footer from "../../Components/Footer";
 import axios from 'axios';
 
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
     const handleSubmit = (event) => {
@@ -29,6 +30,11 @@ const App = () => {
         })
             .then((response) => {
                 alert(response.data);
+                setUser(response.data);
+                localStorage.setItem('user', response.data);
+                
+                console.log(response.data);
+                nav("/avaliar");
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -37,8 +43,8 @@ const App = () => {
 
     const [password, setPassword] = useState(null);
     const [email, setEmail] = useState(null);
-
-
+    const [user, setUser] = useState(null);
+    const nav = useNavigate();
 
     return (
         <>
