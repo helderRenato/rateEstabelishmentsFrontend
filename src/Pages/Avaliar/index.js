@@ -6,15 +6,19 @@ import style from "./style.module.css"
 import search from "../../assets/search.svg"
 import Footer from "../../Components/Footer";
 
+import axios from 'axios';
+
 const DistritoModel = {
     distrito: "",
     codigoine: ""
 }
 
-export default function Avaliar() {
+const App = () => {
     const [distritos, setDistritos] = useState([DistritoModel])
     const [typeestablishment, setTypeEstablishment] = useState(null);
     const [name, setName] = useState(null);
+    const [city, setCity] = useState(null);
+    const [estab, setEstab] = useState(null);
 
     async function fetchDistritos() {
         const response = await fetch("https://json.geoapi.pt/distritos")
@@ -36,7 +40,37 @@ export default function Avaliar() {
         setTypeEstablishment(e.target.value);
     }
 
-    const handleSubmit = (event) => { }
+    const handleSubmit1 = (event) => {
+        event.preventDefault();
+        axios({
+            method: 'GET',
+
+            url: 'https://localhost:7045/api/establishmentapi/get',
+            //data: user,
+            headers: { 'Content-Type': 'application/json' },
+            params: {
+                name: name,
+                city: city,
+                type: typeestablishment
+            }
+        })
+            .then((response) => {
+                alert(response.data);
+                console.log(response.data);
+                setEstab(response.data);
+                localStorage.setItem('establ', response.data);
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+                localStorage.removeItem('establ');
+                setEstab(null);
+            });
+
+    }
+
+    const handleSubmit2 = (event) => {
+
+    }
 
     return (
         <>
@@ -47,7 +81,7 @@ export default function Avaliar() {
                     <div className={style.searchbar}>
                         <form>
                             <div className={style.filtroDistrito}>
-                                <select >
+                                <select value={city} onChange={(evt) => { setCity(evt.target.value) }} >
                                     <optgroup>
                                         <option value={true}>Selecione o distrito</option>
 
@@ -64,6 +98,7 @@ export default function Avaliar() {
                                     <input type={"text"} value={name} onChange={(evt) => { setName(evt.target.value) }} placeholder="Procure Aqui o estabelecimento..."></input>
                                 </div>
                                 <div className={style.searchButton}><img src={search}></img></div>
+                                <button type="submit" onClick={(evt) => handleSubmit1(evt)}>procurar</button>
                             </div>
                         </form>
                     </div>
@@ -82,10 +117,22 @@ export default function Avaliar() {
 
                     </div>
                     <div>
-                        <label>Nome</label>
-                        <label>Distrito</label>
-                        <label>Morada</label>
-                        <label>Tipo de Estabelecimento</label>
+                        {estab ? (
+                            <div>
+                                <h1>Data:</h1>
+                                <label>Name: {estab.name}</label>
+                                <br />
+                                <label>City: {estab.city}</label>
+                                <br />
+                                <label>Address: {estab.address}</label>
+                                <br />
+                                <label>Phone: {estab.phone}</label>
+                                <br />
+                                <label>Type: {estab.typeEstablishment}</label>
+                            </div>
+                        ) : (
+                            <p>Loading data...</p>
+                        )}
                     </div>
                     <form>
 
@@ -94,7 +141,8 @@ export default function Avaliar() {
                             type="number"
                             pattern="[0-5]*"
                         />
-                        <button type={"submit"} onClick={(evt) => handleSubmit(evt)}>Avaliar</button>
+                        <button type={"submit"} onClick={(evt) => handleSubmit2(evt)}>Avaliar</button>
+                        
                     </form>
                 </div>
             </div>
@@ -103,3 +151,5 @@ export default function Avaliar() {
         </>
     )
 }
+
+export default App;
