@@ -19,6 +19,8 @@ const App = () => {
     const [name, setName] = useState(null);
     const [city, setCity] = useState(null);
     const [estab, setEstab] = useState(null);
+    const [datat, setDatat] = useState([]);
+    
 
     async function fetchDistritos() {
         const response = await fetch("https://json.geoapi.pt/distritos")
@@ -45,25 +47,26 @@ const App = () => {
         axios({
             method: 'GET',
 
-            url: 'https://localhost:7045/api/establishmentapi/get',
+            url: 'https://localhost:7045/api/establishmentapi/getFiltered',
             //data: user,
             headers: { 'Content-Type': 'application/json' },
             params: {
                 name: name,
                 city: city,
-                type: typeestablishment
+                typeestablishment: typeestablishment
             }
         })
             .then((response) => {
                 alert(response.data);
                 console.log(response.data);
-                setEstab(response.data);
-                localStorage.setItem('establ', response.data);
+                //setEstab(response.data);
+                //localStorage.setItem('establ', response.data);
+                setDatat(response.data);
             })
             .catch((error) => {
                 console.error(error.response.data);
-                localStorage.removeItem('establ');
-                setEstab(null);
+                //localStorage.removeItem('establ');
+                //setEstab(null);
             });
 
     }
@@ -97,43 +100,42 @@ const App = () => {
                                 <div>
                                     <input type={"text"} value={name} onChange={(evt) => { setName(evt.target.value) }} placeholder="Procure Aqui o estabelecimento..."></input>
                                 </div>
-                                <div className={style.searchButton}><img src={search}></img></div>
-                                <button type="submit" onClick={(evt) => handleSubmit1(evt)}>procurar</button>
+                                <div className={style.searchButton}>
+                                    <img src={search} onClick={(evt) => handleSubmit1(evt)}></img>
+                                </div>
+
                             </div>
                         </form>
                     </div>
                     <div className={style.filterByTipo}>
-                        <input type={"radio"} value="restaurante" onChange={onOptionChange} id="restaurante"></input>
+                        <input type={"radio"} name="tipo" value="restaurante" onChange={onOptionChange} id="restaurante"></input>
                         <label htmlFor="restaurante">Restaurante</label>
 
-                        <input type={"radio"} value="cafe" onChange={onOptionChange} id="cafe"></input>
+                        <input type={"radio"} name="tipo" value="café" onChange={onOptionChange} id="cafe"></input>
                         <label htmlFor="cafe">Café</label>
 
-                        <input type={"radio"} value="bar" onChange={onOptionChange} id="bar"></input>
+                        <input type={"radio"} name="tipo" value="bar" onChange={onOptionChange} id="bar"></input>
                         <label htmlFor="bar">Bar</label>
 
-                        <input type={"radio"} value="hotel" onChange={onOptionChange} id="hotel"></input>
+                        <input type={"radio"} name="tipo" value="hotel" onChange={onOptionChange} id="hotel"></input>
                         <label htmlFor="hotel">Hotel</label>
 
                     </div>
+
                     <div>
-                        {estab ? (
-                            <div>
-                                <h1>Data:</h1>
-                                <label>Name: {estab.name}</label>
-                                <br />
-                                <label>City: {estab.city}</label>
-                                <br />
-                                <label>Address: {estab.address}</label>
-                                <br />
-                                <label>Phone: {estab.phone}</label>
-                                <br />
-                                <label>Type: {estab.typeEstablishment}</label>
+                        {datat.map(estab =>
+                            <div key={estab.id}>
+                                <p>{estab.name} - {estab.city} - {estab.phone}</p>
+                                <div>
+                                    {estab.listPhotos.map(photo => (
+                                        <img key={photo.Id} src={`/Photos/User/${photo.name}`} alt="Establishment Photo" />
+                                    ))}
+                                </div>
                             </div>
-                        ) : (
-                            <p>Loading data...</p>
                         )}
                     </div>
+
+
                     <form>
 
                         <label>Avaliação</label>
@@ -142,7 +144,7 @@ const App = () => {
                             pattern="[0-5]*"
                         />
                         <button type={"submit"} onClick={(evt) => handleSubmit2(evt)}>Avaliar</button>
-                        
+
                     </form>
                 </div>
             </div>
