@@ -15,48 +15,39 @@ const DistritoModel = {
 
 const App = () => {
 
-    const [thumbnail, setThumbnail] = useState(null);
-    const [distritos, setDistritos] = useState([DistritoModel])
+    //const USER = localStorage.getItem("type");
+    const [datat, setDatat] = useState([]);
 
-    const [email, setEmail] = useState(null);
-    const [password, setPassword] = useState(null);
-    const [name, setName] = useState(null);
-    const [city, setCity] = useState(null);
-    const [address, setAddress] = useState(null);
-    const [typeestablishment, setTypeEstablishment] = useState(null);
-    const [phone, setPhone] = useState(null);
 
-    const USER = localStorage.getItem("type");
 
-    const userType = USER();
 
-    const formData = new FormData();
-    formData.append('Email', email);
-    formData.append('Password', password);
-    formData.append('Name', name);
-    formData.append('City', city);
-    formData.append('Address', address);
-    formData.append('TypeEstablishment', typeestablishment);
-    formData.append('File', thumbnail);
-    formData.append('Phone', phone);
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        axios({
+            method: 'GET',
 
-    async function fetchDistritos() {
-        const response = await fetch("https://json.geoapi.pt/distritos")
-        const data = response.json()
+            url: 'https://localhost:7045/api/establishmentapi/getData',
+            //data: user,
+            headers: { 'Content-Type': 'application/json' },
+            params: {
+                id: localStorage.getItem("Estab"),
+            }
+        })
+            .then((response) => {
+                alert(response.data);
+                console.log(response.data);
+                //setEstab(response.data);
+                //localStorage.setItem('establ', response.data);
+                setDatat(response.data);
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+                //localStorage.removeItem('establ');
+                //setEstab(null);
+            });
 
-        return data
     }
 
-    async function getDistritos() {
-        const data = await fetchDistritos()
-        setDistritos(data)
-    }
-
-    useEffect(() => {
-        getDistritos()
-    }, [])
-
-    //value={email} onChange={(evt) => { setEmail(evt.target.value) }}
 
     return (
         <>
@@ -65,92 +56,35 @@ const App = () => {
             <div className={style.container}>
                 <div className={style.content}>
 
-                    <label>Nome</label>
-                    {USER === "1" && (
-                        
-                            <input>as</input>
-                        
-                    )
-                    }{USER === "2" && (
-                        
-                            <label>a</label>
-                        
-                    )}
+                    <button onClick={(evt) => handleSubmit(evt)}> teste</button>
+                    <p>{datat.name}</p>
+                    <p>{datat.email}</p>
+                    <p>{datat.phone}</p>
+                    <p>{datat.address}</p>
+                    <p>{datat.city}</p>
+                    <p>{datat.typeestablishment}</p>
 
-
-
-                    <label>Email</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>City</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>Address</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>Type of Establishment</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>Phone</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
+                    <div>
+                        {datat.listComment && datat.listComment.map((comment) => {
+                            if (comment.User.Id === localStorage.getItem("user")) {
+                                return (
+                                    <React.Fragment key={comment.Id}>
+                                        <p>{comment.User.Username}</p>
+                                        <p>{comment.Text}</p>
+                                    </React.Fragment>
+                                );
+                            } else {
+                                return (
+                                    <>
+                                        <p>{comment.User.Username}</p>
+                                        <p>{comment.Text}</p>
+                                    </>
+                                )
+                            }
+                        })}
+                    </div>
                 </div>
-            </div>
+            </div >
 
             <Footer></Footer>
         </>

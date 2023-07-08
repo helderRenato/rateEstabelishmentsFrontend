@@ -7,7 +7,7 @@ import search from "../../assets/search.svg"
 import Footer from "../../Components/Footer";
 
 import axios from 'axios';
-
+import { useNavigate } from "react-router-dom";
 const DistritoModel = {
     distrito: "",
     codigoine: ""
@@ -21,6 +21,8 @@ const App = () => {
     const [estab, setEstab] = useState(null);
     const [datat, setDatat] = useState([]);
     
+    const nav = useNavigate();
+
     const PATH ="https://localhost:7045/Photos/User/";
 
     async function fetchDistritos() {
@@ -72,8 +74,9 @@ const App = () => {
 
     }
 
-    const handleSubmit2 = (event) => {
-
+    const EstablishmentSelected = (id) => {
+        localStorage.setItem("Estab", id);
+        nav("/detalhes");
     }
 
     return (
@@ -127,6 +130,7 @@ const App = () => {
                         {datat.map(estab =>
                             <div key={estab.id}>
                                 <p>{estab.name} - {estab.city} - {estab.phone}</p>
+                                <button onClick={() => EstablishmentSelected(estab.id)}>Detalhes</button>
                                 <div>
                                     {estab.listPhotos.map(photo => (
                                         <img width="300" height="300" key={photo.Id} src={`https://localhost:7045/Photos/User/${photo.name}`} alt="Establishment Photo" />
@@ -136,17 +140,6 @@ const App = () => {
                         )}
                     </div>
 
-
-                    <form>
-
-                        <label>Avaliação</label>
-                        <input
-                            type="number"
-                            pattern="[0-5]*"
-                        />
-                        <button type={"submit"} onClick={(evt) => handleSubmit2(evt)}>Avaliar</button>
-
-                    </form>
                 </div>
             </div>
 
