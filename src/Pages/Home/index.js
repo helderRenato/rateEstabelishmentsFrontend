@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../../Components/NavBar";
 import style from "./style.module.css"
 
@@ -9,18 +10,25 @@ import Footer from "../../Components/Footer";
 
 export default function Home(){
     const user = localStorage.getItem("type")
-
+    const history = useNavigate()
+    
+    function redirectToAvaliar(){
+        history("/avaliar")
+    }
     return(
         <>
             <NavBar></NavBar>
             {
-                localStorage.getItem("user") ? (
+                localStorage.getItem("type")  ? (
                     //Se o utilizador estiver autenticado vamos a apresentar uma página especial para cada 
                     //Primeiro precisamos de diferenciar o utilizador e um estabelecimento 
-                    
-                    <div>
+                    (localStorage.getItem("type") == 1)  ? (
+                        redirectToAvaliar()
+                    ) : (
+                        <div>
 
-                    </div>
+                        </div>
+                    )
                 ) : (
                     <div>
                         <div className={style.apresentation}>
