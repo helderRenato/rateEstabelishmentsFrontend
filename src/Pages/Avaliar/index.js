@@ -21,6 +21,7 @@ const App = () => {
     const [estab, setEstab] = useState(null);
     const [datat, setDatat] = useState([]);
     
+    const PATH ="https://localhost:7045/Photos/User/";
 
     async function fetchDistritos() {
         const response = await fetch("https://json.geoapi.pt/distritos")
@@ -89,7 +90,7 @@ const App = () => {
                                         <option value={true}>Selecione o distrito</option>
 
                                         {distritos.map(distritos => {
-                                            console.log(distritos.distrito)
+                                            //console.log(distritos.distrito)
                                             return <option key={distritos.distrito}>{distritos.distrito}</option>
                                         }
                                         )}
@@ -128,7 +129,7 @@ const App = () => {
                                 <p>{estab.name} - {estab.city} - {estab.phone}</p>
                                 <div>
                                     {estab.listPhotos.map(photo => (
-                                        <img key={photo.Id} src={`/Photos/User/${photo.name}`} alt="Establishment Photo" />
+                                        <img width="300" height="300" key={photo.Id} src={`https://localhost:7045/Photos/User/${photo.name}`} alt="Establishment Photo" />
                                     ))}
                                 </div>
                             </div>
