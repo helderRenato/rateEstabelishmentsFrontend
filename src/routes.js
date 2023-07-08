@@ -6,6 +6,7 @@ import CadastroEstabelecimento from './Pages/CadastroEstabelecimento'
 import Home from "./Pages/Home"
 import Login from './Pages/Login'
 import LoginEst from './Pages/LoginEst'
+import Detalhes from './Pages/Detalhes'
 
 export default function Router(){
     return(
@@ -17,6 +18,7 @@ export default function Router(){
                 <Route path='/avaliador' element={<CadastroAvaliador/>}></Route>
                 <Route path='/estabelecimento' element={<CadastroEstabelecimento/>}></Route>
                 <Route path='/avaliar' element={<Avaliar/>}></Route>
+                <Route path='/detalhes' element={<Detalhes/>}></Route>
             </Routes>
         </BrowserRouter>
     )

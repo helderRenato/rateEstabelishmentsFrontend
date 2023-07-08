@@ -23,7 +23,7 @@ const App = () => {
 
         axios({
             method: 'POST',
-            // Por aqui o sitio onde por o utilizador
+            
             url: 'https://localhost:7045/api/establishmentapi/login',
             data: user,
             headers: { 'Content-Type': 'application/json' },
@@ -31,10 +31,11 @@ const App = () => {
             .then((response) => {
                 alert(response.data);
                 setUser(response.data);
-                localStorage.setItem('user', response.data);
+                localStorage.setItem('establishment', response.data);
+                localStorage.setItem('type', '2');
                 
                 console.log(response.data);
-                nav("/avaliar");
+                nav("/detalhes");
             })
             .catch((error) => {
                 console.error(error.response.data);

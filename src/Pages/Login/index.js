@@ -29,7 +29,8 @@ const App = () => {
                 alert(response.data);
                 setUser(response.data);
                 localStorage.setItem('user', response.data);
-                
+                localStorage.setItem('type', '1');
+
                 console.log(response.data);
                 nav("/avaliar");
             })
