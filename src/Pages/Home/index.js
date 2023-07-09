@@ -6,29 +6,103 @@ import style from "./style.module.css"
 //Import of Images
 import coolStars from "../../assets/cool_stars.svg"
 import Footer from "../../Components/Footer";
+import { useState } from "react";
 
+import axios from 'axios';
 
 export default function Home(){
-    const user = localStorage.getItem("type")
+    const [photo, setPhoto] = useState([])
+    const [photos, setPhotos] = useState([])
+    const type = localStorage.getItem("type")
+    const user = localStorage.getItem("user")
     const history = useNavigate()
     
     function redirectToAvaliar(){
         history("/avaliar")
     }
+
+    async function getPhotos(){
+        axios({
+            method: 'GET',
+            url: `https://localhost:7045/api/establishmentapi/getphotos/${user}`,
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then((response) => {
+                setPhotos(response.data)
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+
+    async function addPhoto(){
+        const formData = new FormData();
+        formData.append('foto', photo);
+
+        axios({
+            method: 'POST',
+            // Por aqui o sitio onde por o estabelecimento
+            url: `https://localhost:7045/api/establishmentapi/addphoto/${user}`,
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+            .then((response) => {
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });        
+        window.location.reload()
+    }
+
+    async function deletePhoto(id){
+        const formData = new FormData();
+        formData.append('idEstablishment', user);
+        axios({
+            method: 'DELETE',
+            // Por aqui o sitio onde por o estabelecimento
+            url: `https://localhost:7045/api/establishmentapi/deletephoto/${id}`,
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+            .then((response) => {
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });   
+
+            window.location.reload()
+    }
+    useEffect(() => {
+        if(localStorage.getItem("type") == 1){
+            redirectToAvaliar()
+        }   
+        getPhotos()
+        console.log(photos)
+    }, [])
     return(
         <>
             <NavBar></NavBar>
             {
-                localStorage.getItem("type")  ? (
+                (localStorage.getItem("type") == 2)   ? (
                     //Se o utilizador estiver autenticado vamos a apresentar uma página especial para cada 
-                    //Primeiro precisamos de diferenciar o utilizador e um estabelecimento 
-                    (localStorage.getItem("type") == 1)  ? (
-                        redirectToAvaliar()
-                    ) : (
-                        <div>
-
+                    <div>
+                        <h1>Fotografias</h1>
+                        <div className={style.photos}>
+                            {photos.map(photo => (
+                                <div>
+                                    <img src={`https://localhost:7045/Photos/User/${photo.name}`} width={"200px"} height={"200px"}></img>
+                                    <button onClick={() => deletePhoto(photo.id)}>Eliminar</button>
+                                </div>
+                            ))}
                         </div>
-                    )
+
+                        <form method="post" onSubmit={addPhoto}>
+                            <input type="file" onChange={event => setPhoto(event.target.files[0])}></input>
+                            <button type={"submit"}>Submeter</button>
+                        </form>
+                    </div>
                 ) : (
                     <div>
                         <div className={style.apresentation}>

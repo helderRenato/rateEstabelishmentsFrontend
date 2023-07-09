@@ -28,7 +28,7 @@ const App = () => {
             .then((response) => {
                 alert(response.data);
                 setUser(response.data);
-                localStorage.setItem('user', response.data);
+                localStorage.setItem('user', response.data.id);
                 localStorage.setItem('type', '1');
 
                 console.log(response.data);
