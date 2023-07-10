@@ -1,13 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../../Components/NavBar";
 import style from "./style.module.css";
 import Footer from "../../Components/Footer";
 import axios from 'axios';
-
-const DistritoModel = {
-    distrito: "",
-    codigoine: ""
-}
 
 const App = () => {
     const [datat, setDatat] = useState([]);
@@ -17,27 +12,32 @@ const App = () => {
     const [rate, setRate] = useState(false);
 
     const coment = {
-        User: localStorage.getItem('user').id,
+        UserFK: localStorage.getItem('user'),
         Text: commen,
+        EstablishmentFK: localStorage.getItem('Estab'),
     }
 
     const rateU = {
-        User: localStorage.getItem('user').id,
+        UserFK: localStorage.getItem('user'),
         Stars: rate
     }
 
     const rati = () => {
         let sum = 0;
-        datat.listRating.forEach((rating) => {
-            sum += rating.stars;
-        });
-        const average = sum / datat.listRating.length;
-        return average;
-    }
+        if (datat && datat.listRatings && datat.listRatings.length > 0) {
+            datat.listRatings.forEach((rating) => {
+                sum += rating.stars;
+            });
+            const average = sum / datat.listRatings.length;
+            //console.log("Average:", average);
+            return average;
+        }
+        return 0; // Return 0 as the default average when there are no ratings
+    };
 
     //buscar establishment
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = () => {
+        //event.preventDefault();
         axios({
             method: 'GET',
             url: 'https://localhost:7045/api/establishmentapi/getData',
@@ -64,11 +64,13 @@ const App = () => {
 
     //comentar
     const handleSubmit2 = (event) => {
+        console.log("erro:", datat.listComments);
+        
         event.preventDefault();
         axios({
             method: 'POST',
             //url pra comentar
-            url: 'https://localhost:7045/api/commentapi/answer/' + localStorage.getItem('user').id,
+            url: 'https://localhost:7045/api/commentapi/comment',
             data: coment,
             headers: { 'Content-Type': 'application/json' },
         })
@@ -84,11 +86,11 @@ const App = () => {
     //avaliar
     const handleSubmit3 = (event) => {
         event.preventDefault();
-        // Implement your logic to handle the rating process here
+
         axios({
             method: 'POST',
             //url pra avaliar
-            url: 'https://localhost:7045/api/ratingapi/rating/' + localStorage.getItem('establishment').id,
+            url: 'https://localhost:7045/api/ratingapi/rating/' + localStorage.getItem('Estab'),
             data: rateU,
             headers: { 'Content-Type': 'application/json' },
         })
@@ -113,7 +115,7 @@ const App = () => {
         axios({
             method: 'Delete',
             // url pra apagar
-            url: 'https://localhost:7045/api/commentapi/deleteAnswer/' + localStorage.getItem('establishment').id,
+            url: 'https://localhost:7045/api/commentapi/deleteAnswer/' + localStorage.getItem('estab'),
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
@@ -133,12 +135,16 @@ const App = () => {
         setIsPopupOpen(false);
     }
 
+    useEffect(() => {
+        handleSubmit();
+    }, []);
+
+
     return (
         <>
             <NavBar></NavBar>
             <div className={style.container}>
                 <div className={style.content}>
-                    <button onClick={handleSubmit}>teste</button>
                     <p>{datat.name}</p>
                     <p>{datat.email}</p>
                     <p>{datat.phone}</p>
@@ -147,9 +153,9 @@ const App = () => {
                     <p>{datat.typeestablishment}</p>
 
                     <div>
-                        {datat.listRating.map((rating) => (
-                            <p>Avaliação: {rati()}</p>
-                        ))}
+
+                        <p>Avaliação: {rati()}</p>
+
                         {!hasRated && (
                             <>
                                 <input value={rate} onChange={(evt) => { setRate(evt.target.value) }}></input>
@@ -157,30 +163,37 @@ const App = () => {
                             </>
                         )}
                     </div>
-
+                    
                     <div>
-                        {datat.listComment && datat.listComment.map((comment) => {
-                            if (comment.User.Id === localStorage.getItem("user")) {
-                                return (
-                                    <React.Fragment key={comment.Id}>
-                                        <p>{comment.User.Username}</p>
-                                        <p>{comment.Text}</p>
-                                        <button onClick={(evt) => handleSubmit4(evt)}>Editar</button>
-                                        <button onClick={(evt) => handleSubmit5(evt)}>Apagar</button>
-                                    </React.Fragment>
-                                );
-                            } else {
-                                return (
-                                    <React.Fragment key={comment.Id}>
-                                        <p>{comment.User.Username}</p>
-                                        <p>{comment.Text}</p>
-                                    </React.Fragment>
-                                );
-                            }
-                        })}
-                        {!datat.listComment || !datat.listComment.some(comment => comment.User.Id === localStorage.getItem("user")) && (
-                            <button name="teste" onClick={handlePopupOpen}>Add Comment</button>
-                        )}
+                        {datat.listComments &&
+                            datat.listComments.map((Comment) => {
+                                if (
+                                    Comment.userFK && Comment.userFK === localStorage.getItem("user")
+                                ) {
+                                    return (
+                                        <React.Fragment key={Comment.id}>
+                                            <p>{Comment.userFK}</p>
+                                            <p>{Comment.text}</p>
+                                            <button onClick={(evt) => handleSubmit4(evt)}>Editar</button>
+                                            <button onClick={(evt) => handleSubmit5(evt)}>Apagar</button>
+                                        </React.Fragment>
+                                    );
+                                } else {
+                                    return (
+                                        <React.Fragment key={Comment.id}>
+                                            <p>{Comment.userFK}</p>
+                                            <p>{Comment.text}</p>
+                                        </React.Fragment>
+                                    );
+                                }
+                            })}
+                        {!datat.listComments &&
+                            
+                                <button name="teste" onClick={handlePopupOpen}>
+                                    Add Comment
+                                </button>
+                        }
+                            
                     </div>
                 </div>
             </div>
