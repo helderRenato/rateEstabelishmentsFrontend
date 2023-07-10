@@ -68,7 +68,7 @@ const App = () => {
         axios({
             method: 'POST',
             //url pra comentar
-            url: 'https://localhost:7045/api/commentapi/answer/'+ localStorage.getItem('user').id,
+            url: 'https://localhost:7045/api/commentapi/answer/' + localStorage.getItem('user').id,
             data: coment,
             headers: { 'Content-Type': 'application/json' },
         })
@@ -88,7 +88,7 @@ const App = () => {
         axios({
             method: 'POST',
             //url pra avaliar
-            url: 'https://localhost:7045/api/ratingapi/rating/'+ localStorage.getItem('establishment').id,
+            url: 'https://localhost:7045/api/ratingapi/rating/' + localStorage.getItem('establishment').id,
             data: rateU,
             headers: { 'Content-Type': 'application/json' },
         })
@@ -113,7 +113,7 @@ const App = () => {
         axios({
             method: 'Delete',
             // url pra apagar
-            url: 'https://localhost:7045/api/commentapi/deleteAnswer/'+ localStorage.getItem('establishment').id,
+            url: 'https://localhost:7045/api/commentapi/deleteAnswer/' + localStorage.getItem('establishment').id,
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
@@ -148,7 +148,7 @@ const App = () => {
 
                     <div>
                         {datat.listRating.map((rating) => (
-                            <p>Avaliação: {rating.stars}</p>
+                            <p>Avaliação: {rati()}</p>
                         ))}
                         {!hasRated && (
                             <>
