@@ -17,7 +17,6 @@ export default function Home(){
     const [show, setShow] = useState(false);
     const [photo, setPhoto] = useState([])
     const [est, setEst] = useState({})
-    const [typeEst, setTypeEst] = useState("")
     const [photos, setPhotos] = useState([])
     const type = localStorage.getItem("type")
     const user = localStorage.getItem("user")
@@ -35,25 +34,22 @@ export default function Home(){
     const [typeestablishment, setTypeEstablishment] = useState(null);
     const [phone, setPhone] = useState(null);
 
-
-    var typeEstablishment = ""
-
-    const [response, setResponse] = useState("") //Variavel utilizada para responder aos comentarios dos utilizadore
+    const [response, setResponse] = useState("") //Variavel utilizada para responder aos comentarios dos utilizador
     const history = useNavigate()
     
     //Esta função vai servir para converter o tipo enum que vem da api a string
     function convertEnumTypeToString(){
         if(est.typeEstablishment == 0){
-            typeEstablishment = "Restaurante"
-            console.log("jj")
+            return "Restaurante"
         }else if(est.typeEstablishment == 1){
-            typeEstablishment = "Café"
+            return "Café"
         }else if(est.typeEstablishment == 2){
-            typeEstablishment = "Bar"
+            return "Bar"
         }else{
-            typeEstablishment = "Hotel"
+            return "Hotel"
         }
     }
+
     function redirectToAvaliar(){
         history("/avaliar")
     }
@@ -69,12 +65,19 @@ export default function Home(){
             headers: { 'Content-Type': 'multipart/form-data' },
         })
             .then((response) => {
-                console.log(response.data)
+                alert("Fotografia adicionada com sucesso")
+                window.location.reload()
             })
             .catch((error) => {
-                console.error(error.response.data);
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
             });        
-        window.location.reload()
+        
     }
 
     async function deletePhoto(id){
@@ -88,13 +91,20 @@ export default function Home(){
             headers: { 'Content-Type': 'multipart/form-data' },
         })
             .then((response) => {
-                console.log(response.data)
+                alert("Foto eliminada com sucesso!")
+                window.location.reload()
             })
             .catch((error) => {
-                console.error(error.response.data);
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
             });   
 
-            window.location.reload()
+
     }
 
     async function getEstablishment(){
@@ -107,15 +117,6 @@ export default function Home(){
                 setPhotos(response.data.listPhotos) //Aproveitar e retirar já as fotos do estabelecimento
                 setRatings(response.data.listRatings)
                 setComments(response.data.listComments)
-                if(est.typeEstablishment == 0){
-                    setTypeEst("Restaurante")
-                }else if(est.typeEstablishment == 1){
-                    setTypeEst("Café")
-                }else if(est.typeEstablishment == 2){
-                    setTypeEst("Bar")
-                }else{
-                    setTypeEst("Hotel")
-                }
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -134,17 +135,18 @@ export default function Home(){
         setDistritos(data)
     }
 
-    async function editarEstablishment(event){
-        event.preventDefault()
+    async function editarEstablishment(){
         const formData = new FormData();
         formData.append('Email', est.email);
         formData.append('Password', est.password);
-        formData.append('Name', name);
-        formData.append('City', city);
-        formData.append('Address', address);
-        formData.append('TypeEstablishment', typeestablishment);
+        formData.append('Name', name == undefined ? est.name : name);
+        formData.append('City', city == undefined ? est.city : city);
+        formData.append('Address', address == undefined ? est.address : address);
+        formData.append('TypeEstablishment', typeestablishment ==  undefined ? est.typeEstablishment : typeestablishment);
         formData.append('File', new File([""], "filename"));
-        formData.append('Phone', phone);
+        formData.append('Phone', phone == undefined ? est.phone : phone);
+
+        console.log()
         axios({
             method: 'POST',
             url: `https://localhost:7045/api/establishmentapi/edit/${user}`,
@@ -152,10 +154,16 @@ export default function Home(){
             headers: { 'Content-Type': 'multipart/form-data' },
         })
             .then((response) => {
-                console.log(response.data)
+                alert("Os dados do estabelecimento foram alterados com sucesso")
             })
             .catch((error) => {
-                console.error(error.response.data);
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
             });  
             
     }
@@ -174,6 +182,68 @@ export default function Home(){
 
         return Math.ceil(media)
     }
+
+    //Função responsável para responder aos comentários dos utilizadores 
+    async function answer(event){
+        const obj  = {
+            response: response, 
+            text: "", 
+            UserFK: 0, 
+            EstablishmentFK: 0
+        }
+
+        axios({
+            method: 'POST',
+            url: `https://localhost:7045/api/commentapi/answer/${user}`,
+            data: obj,
+            headers: { 'Content-Type': 'application/json'  },
+        })
+            .then((response) => {
+                setEst(response.data)
+                window.location.reload() 
+            })
+            .catch((error) => {
+                alert(error.response.data);
+            });  
+        
+    }
+
+    //Função responsável para eliminar a resposta 
+    async function eliminarResposta(id){
+        axios({
+            method: 'DELETE',
+            url: `https://localhost:7045/api/commentapi/deleteanswer/${id}`,
+        })
+            .then((response) => {
+                alert("Comentário eliminado com sucesso")
+                window.location.reload()
+            })
+            .catch((error) => {
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
+            });  
+        
+    }
+
+    //Buscar os dados do utilizador
+    async function denuciarComment(id){
+        axios({
+            method: 'POST',
+            url: `https://localhost:7045/api/commentapi/denunciar/${id}`,
+        })
+            .then((response) => {
+                alert("Comentário denunciado")
+            })
+            .catch((error) => {
+                console.log(error.response.data)
+            });  
+    }
+
     useEffect(() => {
         if(localStorage.getItem("type") == 1){
             redirectToAvaliar()
@@ -181,15 +251,14 @@ export default function Home(){
 
         getEstablishment()
         getDistritos()
-        
-        convertEnumTypeToString()
-
             //Atribuir os valores padrão as variáveis de auxilio 
         setName(est.name)
         setCity(est.city)
         setAddress(est.address)
         setTypeEstablishment(est.typeEstablishment)
         setPhone(est.phone)
+
+       
     }, [])
     
     return(
@@ -230,7 +299,7 @@ export default function Home(){
                                         <p><strong>Endereço: </strong>{est.address}</p>
                                         <p><strong>Cidade: </strong>{est.city}</p>
                                         <p><strong>Nº de telemóvel: </strong>{est.phone}</p>
-                                        <p><strong>Tipo de estabelecimento: </strong>{typeEst}</p>
+                                        <p><strong>Tipo de estabelecimento: </strong>{convertEnumTypeToString()}</p>
                                         <button type="submit" class="btn btn-primary" onClick={handleShow}>Editar Dados</button>
                                     </div>
                                     
@@ -249,34 +318,39 @@ export default function Home(){
                                         {comments.map(comment => (
                                             <div className={style.comment}>
                                                 <div>
-                                                    <p><strong>username</strong></p>
+                                                    <p><strong>Username: </strong>{}</p>
                                                     <p>{comment.text}</p>
                                                     
                                                 </div>
-                                                <div className={style.answer}>
-                                                    <strong>Resposta: </strong>Esta é a resposta<br/>
-                                                </div>
-                                                <div>
+
+                                                {/*Só aparece a resposta caso o comentário tiver a resposta */}
+                                               { comment.response ? (
+                                                    <div className={style.answer}>
+                                                        <strong>Resposta: </strong>{comment.response}<br/>
+                                                        <button onClick={() => eliminarResposta(comment.id)}>Eliminar Resposta</button>
+                                                    </div>
+                                               ) : (
                                                     <form>
-                                                    <div class="form-group">
-                                                        <div class="container">
-                                                            <div class="row">
-                                                                <div class="col-sm">
-                                                                    <input type={"text"} class="form-control" onChange={event => setResponse(event.target.files[0])}></input>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <button type="submit" class="btn btn-primary" >Responder</button>   
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <a href="">Denunciar</a>  
-                                                                    <button class="btn btn-primary">Eliminar Resposta</button>  
+                                                        <div class="form-group">
+                                                            <div class="container">
+                                                                <div class="row">
+                                                                    <div class="col-sm">
+                                                                        <input type={"text"} class="form-control" onChange={event => setResponse(event.target.value)}></input>
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                        <button type="submit" class="btn btn-primary" onClick={answer}>Responder</button>   
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                        <button onClick={() => denuciarComment(comment.id)}>Denunciar</button>  
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
-                                                    </div>
-
                                                     </form>
+                                               )}
+                                                
+                                                <div>
+                                                   
                                                 </div>
                                             </div>
                                         ))}
@@ -347,7 +421,7 @@ export default function Home(){
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlSelect2">Tipo de Estabelecimento</label>
-                        <select class="form-control" value={typeestablishment} defaultValue={typeEst} onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
+                        <select class="form-control" value={typeestablishment} defaultValue={est.typeEstablishment} required onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
                                     <optgroup>
                                         <option value={0}>Restaurante</option>
                                         <option value={1}>Café</option>
