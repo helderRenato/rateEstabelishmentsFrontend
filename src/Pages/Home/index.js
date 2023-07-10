@@ -4,6 +4,7 @@ import NavBar from "../../Components/NavBar";
 import style from "./style.module.css"
 import Carousel from 'react-bootstrap/Carousel';
 import Modal from 'react-bootstrap/Modal';
+import { Rating } from "@mui/material";
 
 //Import of Images
 import coolStars from "../../assets/cool_stars.svg"
@@ -21,7 +22,8 @@ export default function Home(){
     const type = localStorage.getItem("type")
     const user = localStorage.getItem("user")
     const [distritos, setDistritos] = useState([])
-
+    const [ratings, setRatings] = useState([])
+    const [comments, setComments] = useState([])
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -35,6 +37,8 @@ export default function Home(){
 
 
     var typeEstablishment = ""
+
+    const [response, setResponse] = useState("") //Variavel utilizada para responder aos comentarios dos utilizadore
     const history = useNavigate()
     
     //Esta função vai servir para converter o tipo enum que vem da api a string
@@ -52,20 +56,6 @@ export default function Home(){
     }
     function redirectToAvaliar(){
         history("/avaliar")
-    }
-
-    async function getPhotos(){
-        axios({
-            method: 'GET',
-            url: `https://localhost:7045/api/establishmentapi/getphotos/${user}`,
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then((response) => {
-                setPhotos(response.data)
-            })
-            .catch((error) => {
-                console.error(error.response.data);
-            });
     }
 
     async function addPhoto(){
@@ -114,6 +104,9 @@ export default function Home(){
         })
             .then((response) => {
                 setEst(response.data)
+                setPhotos(response.data.listPhotos) //Aproveitar e retirar já as fotos do estabelecimento
+                setRatings(response.data.listRatings)
+                setComments(response.data.listComments)
                 if(est.typeEstablishment == 0){
                     setTypeEst("Restaurante")
                 }else if(est.typeEstablishment == 1){
@@ -143,21 +136,20 @@ export default function Home(){
 
     async function editarEstablishment(event){
         event.preventDefault()
-        const estabelecimento = {
-            email: est.email, 
-            password: est.password, 
-            name: name, 
-            city: city, 
-            address: address, 
-            typeEstablishment: typeestablishment, 
-            File: new File([""], "filename")//Criar um ficheiro vazio
-        }
-        console.log(estabelecimento)
+        const formData = new FormData();
+        formData.append('Email', est.email);
+        formData.append('Password', est.password);
+        formData.append('Name', name);
+        formData.append('City', city);
+        formData.append('Address', address);
+        formData.append('TypeEstablishment', typeestablishment);
+        formData.append('File', new File([""], "filename"));
+        formData.append('Phone', phone);
         axios({
             method: 'POST',
             url: `https://localhost:7045/api/establishmentapi/edit/${user}`,
-            data: estabelecimento,
-            headers: { 'Content-Type': 'application/json' },
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
         })
             .then((response) => {
                 console.log(response.data)
@@ -168,14 +160,28 @@ export default function Home(){
             
     }
 
+  
+
+    //Função que vai calcular a media de stars que o estabelecimento recebeu
+    function getRatingMedia(){
+        var media = 0
+
+        ratings.forEach(rating => {
+            media += rating.stars
+        });
+
+        media = media / ratings.length
+
+        return Math.ceil(media)
+    }
     useEffect(() => {
         if(localStorage.getItem("type") == 1){
             redirectToAvaliar()
         }   
 
-        getDistritos()
-        getPhotos()
         getEstablishment()
+        getDistritos()
+        
         convertEnumTypeToString()
 
             //Atribuir os valores padrão as variáveis de auxilio 
@@ -195,19 +201,20 @@ export default function Home(){
                     <div>
                         <div class="container">
                             <div class="row">
-                                <div class="col-sm">
+                                <div>
                                     <h1>{est.name}</h1>
                                     <Carousel variant="dark">
                                         
                                         {photos.map(photo => (
                                             <Carousel.Item>
-                                                <img className="d-block w-100" src={`https://localhost:7045/Photos/User/${photo.name}`}height={"200px"}></img>
+                                                <img className="d-block w-100" src={`https://localhost:7045/Photos/User/${photo.name}`}height={"300px"}></img>
                                                 <Carousel.Caption>
                                                     <button className="d-block" onClick={() => deletePhoto(photo.id)}>Eliminar</button>
                                                 </Carousel.Caption>
                                             </Carousel.Item>
                                         ))}
                                     </Carousel>
+                                    
                                     
                                     <div className={style.addPhoto}>
                                         <form onSubmit={addPhoto}>
@@ -218,6 +225,7 @@ export default function Home(){
                                         </form>
                                     </div>
                                     
+                                    <h1>Dados do estabelecimento</h1>
                                     <div className={style.dados}>
                                         <p><strong>Endereço: </strong>{est.address}</p>
                                         <p><strong>Cidade: </strong>{est.city}</p>
@@ -227,14 +235,56 @@ export default function Home(){
                                     </div>
                                     
                                 </div>
-                                <div class="col-sm">
-                                    One of three columns
+                                <div>
+                                    <h1>Avaliações</h1>
+                                    <div className={style.rating}>
+                                        <strong>Avaliação geral: </strong>
+                                        <Rating name="size-large" value={getRatingMedia()} size="large" readOnly/>
+                                        <strong>({ratings.length})</strong>
+                                        
+                                    </div>
+                                    
+                                    <h4>Comentários</h4>
+                                    <div className={style.comments}>
+                                        {comments.map(comment => (
+                                            <div className={style.comment}>
+                                                <div>
+                                                    <p><strong>username</strong></p>
+                                                    <p>{comment.text}</p>
+                                                    
+                                                </div>
+                                                <div className={style.answer}>
+                                                    <strong>Resposta: </strong>Esta é a resposta<br/>
+                                                </div>
+                                                <div>
+                                                    <form>
+                                                    <div class="form-group">
+                                                        <div class="container">
+                                                            <div class="row">
+                                                                <div class="col-sm">
+                                                                    <input type={"text"} class="form-control" onChange={event => setResponse(event.target.files[0])}></input>
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <button type="submit" class="btn btn-primary" >Responder</button>   
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <a href="">Denunciar</a>  
+                                                                    <button class="btn btn-primary">Eliminar Resposta</button>  
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    
                 ) : (
                     <div>
                         <div className={style.apresentation}>
@@ -274,14 +324,13 @@ export default function Home(){
                 <form onSubmit={editarEstablishment}>
                     <div class="form-group">
                         <label for="nome">Nome</label>
-                        <input type="text" class="form-control" id="nome" value={est.name}  onChange={(evt) => { setName(evt.target.value) }}/>
+                        <input type="text" class="form-control" id="nome" required defaultValue={est.name}  onChange={(evt) => { setName(evt.target.value) }}/>
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlSelect1">Distrito</label>
-                        <select class="form-control" value={city} onChange={(evt) => { setCity(evt.target.value)}}>
+                        <select class="form-control" value={city} defaultValue={est.city} required onChange={(evt) => { setCity(evt.target.value)}}>
                             <optgroup>
                                     {distritos.map(distritos => {
-                                        console.log(distritos.distrito)
                                         return <option key={distritos.distrito}>{distritos.distrito}</option>
                                     }
                                     )}
@@ -290,15 +339,15 @@ export default function Home(){
                     </div>
                     <div class="form-group">
                         <label for="end">Endereço:</label>
-                        <input type="text" class="form-control" id="end" value={est.address}  onChange={(evt) => { setAddress(evt.target.value) }}/>
+                        <input type="text" class="form-control" required id="end" defaultValue={est.address}  onChange={(evt) => { setAddress(evt.target.value) }}/>
                     </div>
                     <div class="form-group">
                         <label for="phone">Telémovel:</label>
-                        <input type="text" class="form-control" id="phone" value={est.phone}  onChange={(evt) => { setPhone(evt.target.value) }}/>
+                        <input type="text" class="form-control" required id="phone" defaultValue={est.phone}  onChange={(evt) => { setPhone(evt.target.value) }}/>
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlSelect2">Tipo de Estabelecimento</label>
-                        <select class="form-control" value={typeestablishment} onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
+                        <select class="form-control" value={typeestablishment} defaultValue={typeEst} onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
                                     <optgroup>
                                         <option value={0}>Restaurante</option>
                                         <option value={1}>Café</option>
