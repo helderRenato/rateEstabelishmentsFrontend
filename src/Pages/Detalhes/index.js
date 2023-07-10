@@ -1,12 +1,8 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState } from "react";
 import NavBar from "../../Components/NavBar";
-import style from "./style.module.css"
-
-//Import of Images
+import style from "./style.module.css";
 import Footer from "../../Components/Footer";
 import axios from 'axios';
-
-import { useNavigate } from "react-router-dom";
 
 const DistritoModel = {
     distrito: "",
@@ -14,148 +10,195 @@ const DistritoModel = {
 }
 
 const App = () => {
+    const [datat, setDatat] = useState([]);
+    const [commen, setCommen] = useState([]);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [hasRated, setHasRated] = useState(false);
+    const [rate, setRate] = useState(false);
 
-    const [thumbnail, setThumbnail] = useState(null);
-    const [distritos, setDistritos] = useState([DistritoModel])
-
-    const [email, setEmail] = useState(null);
-    const [password, setPassword] = useState(null);
-    const [name, setName] = useState(null);
-    const [city, setCity] = useState(null);
-    const [address, setAddress] = useState(null);
-    const [typeestablishment, setTypeEstablishment] = useState(null);
-    const [phone, setPhone] = useState(null);
-
-    const USER = localStorage.getItem("type");
-
-    const userType = USER();
-
-    const formData = new FormData();
-    formData.append('Email', email);
-    formData.append('Password', password);
-    formData.append('Name', name);
-    formData.append('City', city);
-    formData.append('Address', address);
-    formData.append('TypeEstablishment', typeestablishment);
-    formData.append('File', thumbnail);
-    formData.append('Phone', phone);
-
-    async function fetchDistritos() {
-        const response = await fetch("https://json.geoapi.pt/distritos")
-        const data = response.json()
-
-        return data
+    const coment = {
+        User: localStorage.getItem('user').id,
+        Text: commen,
     }
 
-    async function getDistritos() {
-        const data = await fetchDistritos()
-        setDistritos(data)
+    const rateU = {
+        User: localStorage.getItem('user').id,
+        Stars: rate
     }
 
-    useEffect(() => {
-        getDistritos()
-    }, [])
+    const rati = () => {
+        let sum = 0;
+        datat.listRating.forEach((rating) => {
+            sum += rating.stars;
+        });
+        const average = sum / datat.listRating.length;
+        return average;
+    }
 
-    //value={email} onChange={(evt) => { setEmail(evt.target.value) }}
+    //buscar establishment
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        axios({
+            method: 'GET',
+            url: 'https://localhost:7045/api/establishmentapi/getData',
+            headers: { 'Content-Type': 'application/json' },
+            params: {
+                id: localStorage.getItem("Estab"),
+            }
+        })
+            .then((response) => {
+                alert(response.data);
+                console.log(response.data);
+                setDatat(response.data);
+                const userRating = datat.listRating.find(rating => rating.User.Id === localStorage.getItem("user"));
+                if (userRating) {
+                    setHasRated(true);
+                } else {
+                    setHasRated(false);
+                }
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+
+    //comentar
+    const handleSubmit2 = (event) => {
+        event.preventDefault();
+        axios({
+            method: 'POST',
+            //url pra comentar
+            url: 'https://localhost:7045/api/commentapi/answer/' + localStorage.getItem('user').id,
+            data: coment,
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then((response) => {
+                alert(response.data);
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+
+    //avaliar
+    const handleSubmit3 = (event) => {
+        event.preventDefault();
+        // Implement your logic to handle the rating process here
+        axios({
+            method: 'POST',
+            //url pra avaliar
+            url: 'https://localhost:7045/api/ratingapi/rating/' + localStorage.getItem('establishment').id,
+            data: rateU,
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then((response) => {
+                alert(response.data);
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+
+    //editar
+    const handleSubmit4 = (event) => {
+        event.preventDefault();
+
+    }
+
+    //apagar
+    const handleSubmit5 = (event) => {
+        event.preventDefault();
+        axios({
+            method: 'Delete',
+            // url pra apagar
+            url: 'https://localhost:7045/api/commentapi/deleteAnswer/' + localStorage.getItem('establishment').id,
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then((response) => {
+                alert(response.data);
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+            });
+    }
+
+    const handlePopupOpen = () => {
+        setIsPopupOpen(true);
+    }
+
+    const handlePopupClose = () => {
+        setIsPopupOpen(false);
+    }
 
     return (
         <>
             <NavBar></NavBar>
-
             <div className={style.container}>
                 <div className={style.content}>
+                    <button onClick={handleSubmit}>teste</button>
+                    <p>{datat.name}</p>
+                    <p>{datat.email}</p>
+                    <p>{datat.phone}</p>
+                    <p>{datat.address}</p>
+                    <p>{datat.city}</p>
+                    <p>{datat.typeestablishment}</p>
 
-                    <label>Nome</label>
-                    {USER === "1" && (
-                        
-                            <input>as</input>
-                        
-                    )
-                    }{USER === "2" && (
-                        
-                            <label>a</label>
-                        
-                    )}
+                    <div>
+                        {datat.listRating.map((rating) => (
+                            <p>Avaliação: {rati()}</p>
+                        ))}
+                        {!hasRated && (
+                            <>
+                                <input value={rate} onChange={(evt) => { setRate(evt.target.value) }}></input>
+                                <button name="ratingButton" onClick={(evt) => handleSubmit3(evt)} >Rate</button>
+                            </>
+                        )}
+                    </div>
 
-
-
-                    <label>Email</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>City</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>Address</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>Type of Establishment</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
-                    <label>Phone</label>
-                    {!USER.phone && (
-                        <>
-                            <input></input>
-                        </>
-                    )
-                    }{USER.phone &&(
-                        <>
-                            <label></label>
-                        </>
-                    )}
-
-
-
+                    <div>
+                        {datat.listComment && datat.listComment.map((comment) => {
+                            if (comment.User.Id === localStorage.getItem("user")) {
+                                return (
+                                    <React.Fragment key={comment.Id}>
+                                        <p>{comment.User.Username}</p>
+                                        <p>{comment.Text}</p>
+                                        <button onClick={(evt) => handleSubmit4(evt)}>Editar</button>
+                                        <button onClick={(evt) => handleSubmit5(evt)}>Apagar</button>
+                                    </React.Fragment>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={comment.Id}>
+                                        <p>{comment.User.Username}</p>
+                                        <p>{comment.Text}</p>
+                                    </React.Fragment>
+                                );
+                            }
+                        })}
+                        {!datat.listComment || !datat.listComment.some(comment => comment.User.Id === localStorage.getItem("user")) && (
+                            <button name="teste" onClick={handlePopupOpen}>Add Comment</button>
+                        )}
+                    </div>
                 </div>
             </div>
-
             <Footer></Footer>
+            {isPopupOpen && (
+                <div className={style.popupContainer}>
+                    <div className={style.popupContent}>
+                        <form onSubmit={handleSubmit2}>
+                            <label>O seu comentário:</label>
+                            <input value={commen} onChange={(evt) => { setCommen(evt.target.value) }}></input>
+                            <button type="submit">Enviar</button>
+                            <button onClick={handlePopupClose}>Fechar</button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </>
     )
-
-
 }
+
 export default App;
