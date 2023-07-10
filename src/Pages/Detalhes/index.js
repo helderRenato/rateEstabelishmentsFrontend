@@ -17,7 +17,7 @@ const App = () => {
     const [rate, setRate] = useState(false);
 
     const coment = {
-        User: localStorage.getItem('user'),
+        User: localStorage.getItem('user').id,
         Text: commen,
     }
 
