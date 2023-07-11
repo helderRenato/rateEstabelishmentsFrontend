@@ -13,7 +13,7 @@ import { useState } from "react";
 
 import axios from 'axios';
 
-export default function Home() {
+export default function Home(){
     const [show, setShow] = useState(false);
     const [photo, setPhoto] = useState([])
     const [est, setEst] = useState({})
@@ -36,25 +36,30 @@ export default function Home() {
 
     const [response, setResponse] = useState("") //Variavel utilizada para responder aos comentarios dos utilizador
     const history = useNavigate()
-
+    
+    const validatePhoneNumber = (phoneNumber) => {
+        const phoneNumberRegex = /^(91|92|93|96)\d{7}$/;
+        return phoneNumberRegex.test(phoneNumber);
+      };
+      
     //Esta função vai servir para converter o tipo enum que vem da api a string
-    function convertEnumTypeToString() {
-        if (est.typeEstablishment == 0) {
+    function convertEnumTypeToString(){
+        if(est.typeEstablishment == 0){
             return "Restaurante"
-        } else if (est.typeEstablishment == 1) {
+        }else if(est.typeEstablishment == 1){
             return "Café"
-        } else if (est.typeEstablishment == 2) {
+        }else if(est.typeEstablishment == 2){
             return "Bar"
-        } else {
+        }else{
             return "Hotel"
         }
     }
 
-    function redirectToAvaliar() {
+    function redirectToAvaliar(){
         history("/avaliar")
     }
 
-    async function addPhoto() {
+    async function addPhoto(){
         const formData = new FormData();
         formData.append('foto', photo);
         axios({
@@ -71,16 +76,16 @@ export default function Home() {
             .catch((error) => {
                 if (error.response) {
                     alert(error.response.data)
-                } else if (error.request) {
+                  } else if (error.request) {
                     console.log(error.request);
-                } else {
+                  } else {
                     console.log('Error', error);
-                }
-            });
-
+                  }
+            });        
+        
     }
 
-    async function deletePhoto(id) {
+    async function deletePhoto(id){
         const formData = new FormData();
         formData.append('idEstablishment', user);
         axios({
@@ -97,17 +102,17 @@ export default function Home() {
             .catch((error) => {
                 if (error.response) {
                     alert(error.response.data)
-                } else if (error.request) {
+                  } else if (error.request) {
                     console.log(error.request);
-                } else {
+                  } else {
                     console.log('Error', error);
-                }
-            });
+                  }
+            });   
 
 
     }
 
-    async function getEstablishment() {
+    async function getEstablishment(){
         axios({
             method: 'GET',
             url: `https://localhost:7045/api/establishmentapi/get/${user}`,
@@ -120,7 +125,7 @@ export default function Home() {
             })
             .catch((error) => {
                 console.error(error.response.data);
-            });
+            });   
     }
 
     async function fetchDistritos() {
@@ -135,14 +140,19 @@ export default function Home() {
         setDistritos(data)
     }
 
-    async function editarEstablishment() {
+    async function editarEstablishment(){
+
+        if(!validatePhoneNumber(phone)){
+            alert("Por Favor insira um nº de telemóvel válido")
+            return
+        }
         const formData = new FormData();
         formData.append('Email', est.email);
         formData.append('Password', est.password);
         formData.append('Name', name == undefined ? est.name : name);
         formData.append('City', city == undefined ? est.city : city);
         formData.append('Address', address == undefined ? est.address : address);
-        formData.append('TypeEstablishment', typeestablishment == undefined ? est.typeEstablishment : typeestablishment);
+        formData.append('TypeEstablishment', typeestablishment ==  undefined ? est.typeEstablishment : typeestablishment);
         formData.append('File', new File([""], "filename"));
         formData.append('Phone', phone == undefined ? est.phone : phone);
 
@@ -159,19 +169,19 @@ export default function Home() {
             .catch((error) => {
                 if (error.response) {
                     alert(error.response.data)
-                } else if (error.request) {
+                  } else if (error.request) {
                     console.log(error.request);
-                } else {
+                  } else {
                     console.log('Error', error);
-                }
-            });
-
+                  }
+            });  
+            
     }
 
-
+  
 
     //Função que vai calcular a media de stars que o estabelecimento recebeu
-    function getRatingMedia() {
+    function getRatingMedia(){
         var media = 0
 
         ratings.forEach(rating => {
@@ -184,11 +194,11 @@ export default function Home() {
     }
 
     //Função responsável para responder aos comentários dos utilizadores 
-    async function answer(id) {
-        const obj = {
-            response: response,
-            text: "",
-            UserFK: 0,
+    async function answer(id){
+        const obj  = {
+            response: response, 
+            text: "", 
+            UserFK: 0, 
             EstablishmentFK: 0
         }
 
@@ -196,20 +206,20 @@ export default function Home() {
             method: 'POST',
             url: `https://localhost:7045/api/commentapi/answer/${id}`,
             data: obj,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json'  },
         })
             .then((response) => {
                 setEst(response.data)
-                window.location.reload()
+                window.location.reload() 
             })
             .catch((error) => {
-                console.log(error.response.data);
-            });
-
+                alert(error.response.data);
+            });  
+        
     }
 
     //Função responsável para eliminar a resposta 
-    async function eliminarResposta(id) {
+    async function eliminarResposta(id){
         axios({
             method: 'DELETE',
             url: `https://localhost:7045/api/commentapi/deleteanswer/${id}`,
@@ -221,17 +231,17 @@ export default function Home() {
             .catch((error) => {
                 if (error.response) {
                     alert(error.response.data)
-                } else if (error.request) {
+                  } else if (error.request) {
                     console.log(error.request);
-                } else {
+                  } else {
                     console.log('Error', error);
-                }
-            });
-
+                  }
+            });  
+        
     }
 
     //Buscar os dados do utilizador
-    async function denuciarComment(id) {
+    async function denuciarComment(id){
         axios({
             method: 'POST',
             url: `https://localhost:7045/api/commentapi/denunciar/${id}`,
@@ -241,31 +251,31 @@ export default function Home() {
             })
             .catch((error) => {
                 console.log(error.response.data)
-            });
+            });  
     }
 
     useEffect(() => {
-        if (localStorage.getItem("type") == 1) {
+        if(localStorage.getItem("type") == 1){
             redirectToAvaliar()
-        }
+        }   
 
         getEstablishment()
         getDistritos()
-        //Atribuir os valores padrão as variáveis de auxilio 
+            //Atribuir os valores padrão as variáveis de auxilio 
         setName(est.name)
         setCity(est.city)
         setAddress(est.address)
         setTypeEstablishment(est.typeEstablishment)
         setPhone(est.phone)
 
-
+       
     }, [])
-
-    return (
+    
+    return(
         <>
             <NavBar></NavBar>
             {
-                (localStorage.getItem("type") == 2) ? (
+                (localStorage.getItem("type") == 2)   ? (
                     //Se o utilizador estiver autenticado vamos a apresentar uma página especial para cada 
                     <div>
                         <div className="container">
@@ -273,18 +283,18 @@ export default function Home() {
                                 <div>
                                     <h1>{est.name}</h1>
                                     <Carousel variant="dark">
-
+                                        
                                         {photos.map(photo => (
                                             <Carousel.Item>
-                                                <img className="d-block w-100" src={`https://localhost:7045/Photos/User/${photo.name}`} height={"300px"}></img>
+                                                <img className="d-block w-100" src={`https://localhost:7045/Photos/User/${photo.name}`}height={"300px"}></img>
                                                 <Carousel.Caption>
                                                     <button className="d-block" onClick={() => deletePhoto(photo.id)}>Eliminar</button>
                                                 </Carousel.Caption>
                                             </Carousel.Item>
                                         ))}
                                     </Carousel>
-
-
+                                    
+                                    
                                     <div className={style.addPhoto}>
                                         <form onSubmit={addPhoto}>
                                             <div className="form-group">
@@ -293,7 +303,7 @@ export default function Home() {
                                             <button type="submit" className="btn btn-primary">Adicionar Fotografia</button>
                                         </form>
                                     </div>
-
+                                    
                                     <h1>Dados do estabelecimento</h1>
                                     <div className={style.dados}>
                                         <p><strong>Endereço: </strong>{est.address}</p>
@@ -302,34 +312,34 @@ export default function Home() {
                                         <p><strong>Tipo de estabelecimento: </strong>{convertEnumTypeToString()}</p>
                                         <button type="submit" className="btn btn-primary" onClick={handleShow}>Editar Dados</button>
                                     </div>
-
+                                    
                                 </div>
                                 <div>
                                     <h1>Avaliações</h1>
                                     <div className={style.rating}>
                                         <strong>Avaliação geral: </strong>
-                                        <Rating name="size-large" value={getRatingMedia()} size="large" readOnly />
+                                        <Rating name="size-large" value={getRatingMedia()} size="large" readOnly/>
                                         <strong>({ratings.length})</strong>
-
+                                        
                                     </div>
-
+                                    
                                     <h4>Comentários</h4>
                                     <div className={style.comments}>
                                         {comments.map(comment => (
                                             <div className={style.comment}>
                                                 <div>
-                                                    <p><strong>Username: </strong>{ }</p>
+                                                    <p><strong>Username: </strong>{}</p>
                                                     <p>{comment.text}</p>
-
+                                                    
                                                 </div>
 
                                                 {/*Só aparece a resposta caso o comentário tiver a resposta */}
-                                                {comment.response ? (
+                                               { comment.response ? (
                                                     <div className={style.answer}>
-                                                        <strong>Resposta: </strong>{comment.response}<br />
+                                                        <strong>Resposta: </strong>{comment.response}<br/>
                                                         <button onClick={() => eliminarResposta(comment.id)}>Eliminar Resposta</button>
                                                     </div>
-                                                ) : (
+                                               ) : (
                                                     <form>
                                                         <div className="form-group">
                                                             <div className="container">
@@ -338,19 +348,19 @@ export default function Home() {
                                                                         <input type={"text"} className="form-control" onChange={event => setResponse(event.target.value)}></input>
                                                                     </div>
                                                                     <div className="col-sm">
-                                                                        <button type="submit" className="btn btn-primary" onClick={() => answer(comment.id)}>Responder</button>
+                                                                        <button type="submit" className="btn btn-primary" onClick={() => answer(comment.id)}>Responder</button>   
                                                                     </div>
                                                                     <div className="col-sm">
-                                                                        <button onClick={() => denuciarComment(comment.id)}>Denunciar</button>
+                                                                        <button onClick={() => denuciarComment(comment.id)}>Denunciar</button>  
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </form>
-                                                )}
-
+                                               )}
+                                                
                                                 <div>
-
+                                                   
                                                 </div>
                                             </div>
                                         ))}
@@ -366,18 +376,18 @@ export default function Home() {
                                 <img src={coolStars} height="100%"></img>
                             </div>
                             <div className={style.aprentationText}>
-                                <p>Descubra o que os outros estão<br />
-                                    a falar sobre os seus<br />
-                                    <span className={style.aprentationText_span1}>estabelecimentos</span> favoritos:<br />
-                                    compartilhe as suas <span className={style.aprentationText_span2}>experiências</span> e avalie os<br />
-                                    lugares que você já visitou!<br /></p>
+                                <p>Descubra o que os outros estão<br/>
+                                a falar sobre os seus<br/>
+                                <span className={style.aprentationText_span1}>estabelecimentos</span> favoritos:<br/>
+                                compartilhe as suas <span className={style.aprentationText_span2}>experiências</span> e avalie os<br/>
+                                lugares que você já visitou!<br/></p>
                                 <a href="/avaliador" className={style.cadastroButton}>Cadastre-se</a>
                             </div>
                         </div>
 
                         <div className={style.apresentationForEstabelishments}>
                             <div className={style.aprentationTextForEstabelishments}>
-                                Junte-se à nossa comunidade e crie já a sua conta para deixar<br />
+                                Junte-se à nossa comunidade e crie já a sua conta para deixar<br/>
                                 o seu estabelecimento aberto ao feedback dos seus clientes.
                             </div>
                             <div>
@@ -388,51 +398,51 @@ export default function Home() {
                 )
             }
 
-
+            
 
             <Footer></Footer>
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                    <form onSubmit={editarEstablishment}>
-                        <div className="form-group">
-                            <label for="nome">Nome</label>
-                            <input type="text" className="form-control" id="nome" required defaultValue={est.name} onChange={(evt) => { setName(evt.target.value) }} />
-                        </div>
-                        <div className="form-group">
-                            <label for="exampleFormControlSelect1">Distrito</label>
-                            <select className="form-control" value={city} defaultValue={est.city} required onChange={(evt) => { setCity(evt.target.value) }}>
-                                <optgroup>
+                <form onSubmit={editarEstablishment}>
+                    <div className="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" className="form-control" id="nome" required defaultValue={est.name}  onChange={(evt) => { setName(evt.target.value) }}/>
+                    </div>
+                    <div className="form-group">
+                        <label for="exampleFormControlSelect1">Distrito</label>
+                        <select className="form-control" value={city} defaultValue={est.city} required onChange={(evt) => { setCity(evt.target.value)}}>
+                            <optgroup>
                                     {distritos.map(distritos => {
                                         return <option key={distritos.distrito}>{distritos.distrito}</option>
                                     }
                                     )}
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label for="end">Endereço:</label>
-                            <input type="text" className="form-control" required id="end" defaultValue={est.address} onChange={(evt) => { setAddress(evt.target.value) }} />
-                        </div>
-                        <div className="form-group">
-                            <label for="phone">Telémovel:</label>
-                            <input type="text" className="form-control" required id="phone" defaultValue={est.phone} onChange={(evt) => { setPhone(evt.target.value) }} />
-                        </div>
-                        <div className="form-group">
-                            <label for="exampleFormControlSelect2">Tipo de Estabelecimento</label>
-                            <select className="form-control" value={typeestablishment} defaultValue={est.typeEstablishment} required onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
-                                <optgroup>
-                                    <option value={0}>Restaurante</option>
-                                    <option value={1}>Café</option>
-                                    <option value={2}>Bar</option>
-                                    <option value={3}>Hotel</option>
-                                </optgroup>
-                            </select>
-                        </div>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label for="end">Endereço:</label>
+                        <input type="text" className="form-control" required id="end" defaultValue={est.address}  onChange={(evt) => { setAddress(evt.target.value) }}/>
+                    </div>
+                    <div className="form-group">
+                        <label for="phone">Telémovel:</label>
+                        <input type="text" className="form-control" required id="phone" defaultValue={est.phone}  onChange={(evt) => { setPhone(evt.target.value) }}/>
+                    </div>
+                    <div className="form-group">
+                        <label for="exampleFormControlSelect2">Tipo de Estabelecimento</label>
+                        <select className="form-control" value={typeestablishment} defaultValue={est.typeEstablishment} required onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
+                                    <optgroup>
+                                        <option value={0}>Restaurante</option>
+                                        <option value={1}>Café</option>
+                                        <option value={2}>Bar</option>
+                                        <option value={3}>Hotel</option>
+                                    </optgroup>
+                        </select>
+                    </div>
 
-                        <button type="submit" className="btn btn-primary">Editar</button>
-                    </form>
+                    <button type="submit" className="btn btn-primary">Editar</button>
+                </form>
                 </Modal.Body>
             </Modal>
         </>

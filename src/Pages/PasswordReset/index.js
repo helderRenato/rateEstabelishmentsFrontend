@@ -9,10 +9,24 @@ import axios from 'axios';
 
 import { useNavigate, useParams} from "react-router-dom";
 
+
 const App = () => {
+    const validatePassword = (password) => {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[a-zA-Z\d!@#$%^&*()]{8,}$/;
+        return passwordRegex.test(password);
+      };
+      
     const handleSubmit = (event) => {
         event.preventDefault();
 
+
+          if(!validatePassword(password)){
+            alert("A password deve ter pelo menos 8 caractéres ,conter pelo menos uma letra minúscula, uma letra maiúscula, um dígito e um carácter especial")
+            return
+        }else if(password != confirmarPassword){
+            alert("As passwords têm de ser iguais por favor repita")
+            return
+        }
         const user = {
             Email: email,
             Password: password,
