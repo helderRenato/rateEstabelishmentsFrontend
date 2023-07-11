@@ -3,6 +3,8 @@ import NavBar from "../../Components/NavBar";
 import style from "./style.module.css";
 import Footer from "../../Components/Footer";
 import axios from 'axios';
+import Carousel from 'react-bootstrap/Carousel';
+import { Rating } from '@mui/material';
 
 const App = () => {
     const [datat, setDatat] = useState([]);
@@ -10,6 +12,8 @@ const App = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [hasRated, setHasRated] = useState(false);
     const [rate, setRate] = useState(false);
+    const [idcom, setIdcom] = useState([]);
+    const [aux, setAux] = useState(false);
 
     const coment = {
         UserFK: localStorage.getItem('user'),
@@ -47,25 +51,29 @@ const App = () => {
             }
         })
             .then((response) => {
-                alert(response.data);
+                //alert(response.data);
                 console.log(response.data);
                 setDatat(response.data);
-                const userRating = datat.listRatings.find(rating => rating.User.Id === localStorage.getItem("user"));
-                if (userRating) {
-                    setHasRated(true);
-                } else {
-                    setHasRated(false);
-                }
+
+                const userRating = response.data.listRatings.find(rating => rating.userFK.toString() == localStorage.getItem("user"));
+                setHasRated(userRating !== undefined);
+
+                const userComment = response.data.listComments.find(comment => comment.userFK.toString() == localStorage.getItem("user"));
+                setAux(userComment !== undefined);
+
+                
             })
             .catch((error) => {
                 console.error(error.response.data);
             });
     }
 
+
+
     //comentar
     const handleSubmit2 = (event) => {
         console.log("erro:", datat.listComments);
-        
+
         event.preventDefault();
         axios({
             method: 'POST',
@@ -75,8 +83,9 @@ const App = () => {
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
-                alert(response.data);
+                //alert(response.data);
                 console.log(response.data);
+                window.location.reload();
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -95,18 +104,13 @@ const App = () => {
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
-                alert(response.data);
+                //alert(response.data);
                 console.log(response.data);
+                window.location.reload();
             })
             .catch((error) => {
                 console.error(error.response.data);
             });
-    }
-
-    //editar
-    const handleSubmit4 = (event) => {
-        event.preventDefault();
-
     }
 
     //apagar
@@ -115,12 +119,13 @@ const App = () => {
         axios({
             method: 'Delete',
             // url pra apagar
-            url: 'https://localhost:7045/api/commentapi/deleteAnswer/' + localStorage.getItem('estab'),
+            url: 'https://localhost:7045/api/commentapi/deleteComment/' + idcom,
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
-                alert(response.data);
+                //alert(response.data);
                 console.log(response.data);
+                window.location.reload();
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -139,77 +144,129 @@ const App = () => {
         handleSubmit();
     }, []);
 
+    const commentOnChange = (idt) => {
+        setIdcom(idt);
+    }
 
+    const buttonDeleteFunction = (event, idte) => {
+        commentOnChange(idte);
+        handleSubmit5(event);
+    }
+
+    const convertEnumTypeToString=() =>{
+        if(datat.typeEstablishment == 0){
+            return "Restaurante"
+        }else if(datat.typeEstablishment == 1){
+            return "Café"
+        }else if(datat.typeEstablishment == 2){
+            return "Bar"
+        }else{
+            return "Hotel"
+        }
+    }
     return (
         <>
             <NavBar></NavBar>
             <div className={style.container}>
                 <div className={style.content}>
-                    <p>{datat.name}</p>
-                    <p>{datat.email}</p>
-                    <p>{datat.phone}</p>
-                    <p>{datat.address}</p>
-                    <p>{datat.city}</p>
-                    <p>{datat.typeestablishment}</p>
+
+                    <Carousel variant="dark">
+                        {datat.listPhotos && datat.listPhotos.length > 0 && datat.listPhotos.map(photo => (
+                            <Carousel.Item>
+                                <img className="d-block w-100" src={`https://localhost:7045/Photos/User/${photo.name}`} height={"300px"}></img>
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
+                    <p><strong>Nome: </strong>{datat.name}</p>
+                    <p><strong>Email: </strong>{datat.email}</p>
+                    <p><strong>Nº de telemóvel: </strong>{datat.phone}</p>
+                    <p><strong>Endereço: </strong>{datat.address}</p>
+                    <p><strong>Cidade: </strong>{datat.city}</p>
+                    <p><strong>Tipo de estabelecimento: </strong>{convertEnumTypeToString()}</p>
 
                     <div>
 
-                        <p>Avaliação: {rati()}</p>
+
+
+                        <div className={style.rating}>
+                            <strong>Avaliação geral: </strong>
+                            {datat.listRatings ? (
+                                <>
+                                    <Rating name="size-large" value={rati()} size="large" readOnly />
+                                    <strong>({datat.listRatings.length})</strong>
+                                </>
+                            ) : (
+                                <span>No ratings yet</span>
+                            )}
+                        </div>
 
                         {!hasRated && (
                             <>
                                 <input value={rate} onChange={(evt) => { setRate(evt.target.value) }}></input>
-                                <button name="ratingButton" onClick={(evt) => handleSubmit3(evt)} >Rate</button>
+                                <button name="ratingButton" className="btn btn-primary" onClick={(evt) => handleSubmit3(evt)} >Avaliar</button>
                             </>
                         )}
                     </div>
-                    
+
+                    {isPopupOpen && (
+                        <div className={style.popupContainer}>
+                            <div className={style.popupContent}>
+                                <form onSubmit={handleSubmit2}>
+                                    <label><strong>O seu comentário: </strong></label>
+                                    <input value={commen} onChange={(evt) => { setCommen(evt.target.value) }}></input>
+                                    <button className="btn btn-primary" type="submit">Enviar</button>
+                                    <button className="btn btn-primary" margin-top="10" onClick={handlePopupClose}>Fechar</button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
                     <div>
-                        {datat.listComments &&
+                        {datat.listComments && datat.listComments.length > 0 &&
                             datat.listComments.map((Comment) => {
+
                                 if (
-                                    Comment.userFK && Comment.userFK === localStorage.getItem("user")
+                                    Comment.userFK && Comment.userFK == localStorage.getItem("user")
                                 ) {
                                     return (
-                                        <React.Fragment key={Comment.id}>
-                                            <p>{Comment.userFK}</p>
-                                            <p>{Comment.text}</p>
-                                            <button onClick={(evt) => handleSubmit4(evt)}>Editar</button>
-                                            <button onClick={(evt) => handleSubmit5(evt)}>Apagar</button>
-                                        </React.Fragment>
+                                        <div key={Comment.id}>
+                                            <p><strong>Username: </strong>{Comment.userFK}</p>
+                                            <p><strong>Comentário: </strong>{Comment.text}</p>
+
+                                            <button className="btn btn-primary" onClick={(evt) => buttonDeleteFunction(evt, Comment.id)}>Apagar</button>
+                                        </div>
                                     );
-                                } else {
+                                }
+
+                                else {
                                     return (
-                                        <React.Fragment key={Comment.id}>
-                                            <p>{Comment.userFK}</p>
-                                            <p>{Comment.text}</p>
-                                        </React.Fragment>
+                                        <div key={Comment.id}>
+                                            <p><strong>Username: </strong>{Comment.userFK}</p>
+                                            <p><strong>Comentário: </strong>{Comment.text}</p>
+                                        </div>
                                     );
                                 }
                             })}
-                        {!datat.listComments &&
-                            
-                                <button name="teste" onClick={handlePopupOpen}>
-                                    Add Comment
-                                </button>
+
+                        {datat.listComments && datat.listComments.length > 0 && !aux &&
+
+                            <button name="teste" className="btn btn-primary" onClick={handlePopupOpen}>
+                                Add Comment
+                            </button>
+
                         }
-                            
+                        {!datat.listComments || datat.listComments.length == 0 &&
+
+                            <button name="teste" className="btn btn-primary" onClick={handlePopupOpen}>
+                                Add Comment
+                            </button>
+                        }
+
                     </div>
                 </div>
             </div>
             <Footer></Footer>
-            {isPopupOpen && (
-                <div className={style.popupContainer}>
-                    <div className={style.popupContent}>
-                        <form onSubmit={handleSubmit2}>
-                            <label>O seu comentário:</label>
-                            <input value={commen} onChange={(evt) => { setCommen(evt.target.value) }}></input>
-                            <button type="submit">Enviar</button>
-                            <button onClick={handlePopupClose}>Fechar</button>
-                        </form>
-                    </div>
-                </div>
-            )}
+
         </>
     )
 }
