@@ -33,6 +33,7 @@ export default function NavBar() {
         // Handle logout logic
         localStorage.removeItem('user'); // Remove user from local storage
         localStorage.removeItem('type'); 
+        localStorage.removeItem('Estab');
         setIsLoggedIn(false); // Set isLoggedIn to false
         nav("/");
     };
