@@ -40,7 +40,7 @@ const App = () => {
         //event.preventDefault();
         axios({
             method: 'GET',
-            url: 'https://localhost:7045/api/establishmentapi/getData',
+            url: `https://localhost:7045/api/establishmentapi/get/${localStorage.getItem("Estab")}`,
             headers: { 'Content-Type': 'application/json' },
             params: {
                 id: localStorage.getItem("Estab"),
@@ -50,7 +50,7 @@ const App = () => {
                 alert(response.data);
                 console.log(response.data);
                 setDatat(response.data);
-                const userRating = datat.listRating.find(rating => rating.User.Id === localStorage.getItem("user"));
+                const userRating = datat.listRatings.find(rating => rating.User.Id === localStorage.getItem("user"));
                 if (userRating) {
                     setHasRated(true);
                 } else {

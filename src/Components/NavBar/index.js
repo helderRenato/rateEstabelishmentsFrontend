@@ -32,7 +32,7 @@ export default function NavBar() {
     const handleLogout = () => {
         // Handle logout logic
         localStorage.removeItem('user'); // Remove user from local storage
-        localStorage.removeItem('type');
+        localStorage.removeItem('type'); 
         setIsLoggedIn(false); // Set isLoggedIn to false
         nav("/");
     };

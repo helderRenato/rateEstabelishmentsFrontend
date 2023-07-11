@@ -1,3 +1,7 @@
+h1{
+    font-weight: bold;
+    font-size: 35px;
+}
 .content form{
     display: flex;
     flex-direction: column;
