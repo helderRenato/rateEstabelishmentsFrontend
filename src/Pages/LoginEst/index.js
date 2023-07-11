@@ -8,13 +8,34 @@ import axios from 'axios';
 
 import { useNavigate } from "react-router-dom";
 
+
 const App = () => {
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        return emailRegex.test(email);
+      };
+    
+      const validatePhoneNumber = (phoneNumber) => {
+        const phoneNumberRegex = /^(91|92|93|96)\d{7}$/;
+        return phoneNumberRegex.test(phoneNumber);
+      };
+    
+      const validatePassword = (password) => {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[a-zA-Z\d!@#$%^&*()]{8,}$/;
+        return passwordRegex.test(password);
+      };
     const handleSubmit = (event) => {
         event.preventDefault();
         //const formData = new FormData();
         //formData.append('Email', email);
         //formData.append('Password', password);
         //formData.append('Username', username);
+
+        if(!validatePassword(password)){
+            alert("A password deve ter pelo menos 8 caractéres ,conter pelo menos uma letra minúscula, uma letra maiúscula, um dígito e um carácter especial")
+            return
+        }
 
         const user = {
             Email: email,

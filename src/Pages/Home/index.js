@@ -37,6 +37,11 @@ export default function Home(){
     const [response, setResponse] = useState("") //Variavel utilizada para responder aos comentarios dos utilizador
     const history = useNavigate()
     
+    const validatePhoneNumber = (phoneNumber) => {
+        const phoneNumberRegex = /^(91|92|93|96)\d{7}$/;
+        return phoneNumberRegex.test(phoneNumber);
+      };
+      
     //Esta função vai servir para converter o tipo enum que vem da api a string
     function convertEnumTypeToString(){
         if(est.typeEstablishment == 0){
@@ -136,6 +141,11 @@ export default function Home(){
     }
 
     async function editarEstablishment(){
+
+        if(!validatePhoneNumber(phone)){
+            alert("Por Favor insira um nº de telemóvel válido")
+            return
+        }
         const formData = new FormData();
         formData.append('Email', est.email);
         formData.append('Password', est.password);
