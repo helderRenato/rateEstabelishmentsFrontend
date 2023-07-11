@@ -50,7 +50,7 @@ export default function NavBar() {
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link href="/avaliar">Avaliar</Nav.Link>
-                            <Nav.Link href="#pricing">Sobre Nós</Nav.Link>
+                            <Nav.Link href="/sobrenos">Sobre Nós</Nav.Link>
                         </Nav>
                         <Nav>
                             {!isLoggedIn && (
