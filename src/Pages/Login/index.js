@@ -34,7 +34,13 @@ const App = () => {
                 nav("/avaliar");
             })
             .catch((error) => {
-                alert(error.response.data);
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
             });
     };
 

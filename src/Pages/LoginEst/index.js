@@ -29,7 +29,6 @@ const App = () => {
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
-                alert(response.data);
                 setUser(response.data);
                 localStorage.setItem('user', response.data.id);
                 localStorage.setItem('type', '2');
@@ -38,7 +37,13 @@ const App = () => {
                 nav("/");
             })
             .catch((error) => {
-                alert(error.response.data);
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
             });
     };
 
