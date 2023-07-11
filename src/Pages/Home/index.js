@@ -184,7 +184,7 @@ export default function Home(){
     }
 
     //Função responsável para responder aos comentários dos utilizadores 
-    async function answer(event){
+    async function answer(id){
         const obj  = {
             response: response, 
             text: "", 
@@ -194,7 +194,7 @@ export default function Home(){
 
         axios({
             method: 'POST',
-            url: `https://localhost:7045/api/commentapi/answer/${user}`,
+            url: `https://localhost:7045/api/commentapi/answer/${id}`,
             data: obj,
             headers: { 'Content-Type': 'application/json'  },
         })
@@ -338,7 +338,7 @@ export default function Home(){
                                                                         <input type={"text"} className="form-control" onChange={event => setResponse(event.target.value)}></input>
                                                                     </div>
                                                                     <div className="col-sm">
-                                                                        <button type="submit" className="btn btn-primary" onClick={answer}>Responder</button>   
+                                                                        <button type="submit" className="btn btn-primary" onClick={() => answer(comment.id)}>Responder</button>   
                                                                     </div>
                                                                     <div className="col-sm">
                                                                         <button onClick={() => denuciarComment(comment.id)}>Denunciar</button>  

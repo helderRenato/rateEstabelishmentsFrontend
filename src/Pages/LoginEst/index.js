@@ -29,7 +29,6 @@ const App = () => {
             headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => {
-                alert(response.data);
                 setUser(response.data);
                 localStorage.setItem('user', response.data.id);
                 localStorage.setItem('type', '2');
@@ -38,7 +37,13 @@ const App = () => {
                 nav("/");
             })
             .catch((error) => {
-                console.error(error.response.data);
+                if (error.response) {
+                    alert(error.response.data)
+                  } else if (error.request) {
+                    console.log(error.request);
+                  } else {
+                    console.log('Error', error);
+                  }
             });
     };
 
@@ -53,7 +58,7 @@ const App = () => {
 
             <div className={style.container}>
                 <div className={style.content}>
-                    <form id="formulario" method="get">
+                    <form id="formulario" method="get" onSubmit={(evt) => handleSubmit(evt)}>
 
                         <label htmlFor="email">Email*</label>
                         <input type={"email"} id="email" value={email} onChange={(evt) => { setEmail(evt.target.value) }} placeholder="Insira aqui o seu email"></input>
@@ -61,7 +66,8 @@ const App = () => {
                         <label htmlFor="password">Password*</label>
                         <input type={"password"} id="password" value={password} onChange={(evt) => { setPassword(evt.target.value) }}></input>
 
-                        <button type={"submit"} onClick={(evt) => handleSubmit(evt)} className={style.iniciarSessaoButton}>Iniciar Sessão</button>
+                        <a href="/resetpass/2">Esqueceu-se da password</a>
+                        <button type={"submit"} className={style.iniciarSessaoButton}>Iniciar Sessão</button>
 
                     </form>
                 </div>

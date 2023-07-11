@@ -3,6 +3,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import Avaliar from './Pages/Avaliar'
 import CadastroAvaliador from './Pages/CadastroAvaliador'
 import CadastroEstabelecimento from './Pages/CadastroEstabelecimento'
+import PasswordReset from './Pages/PasswordReset'
 import Home from "./Pages/Home"
 import Login from './Pages/Login'
 import LoginEst from './Pages/LoginEst'
@@ -19,6 +20,7 @@ export default function Router(){
                 <Route path='/estabelecimento' element={<CadastroEstabelecimento/>}></Route>
                 <Route path='/avaliar' element={<Avaliar/>}></Route>
                 <Route path='/detalhes' element={<Detalhes/>}></Route>
+                <Route path='/resetpass/:id' element={<PasswordReset/>}></Route>
             </Routes>
         </BrowserRouter>
     )
