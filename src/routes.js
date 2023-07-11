@@ -8,6 +8,7 @@ import Home from "./Pages/Home"
 import Login from './Pages/Login'
 import LoginEst from './Pages/LoginEst'
 import Detalhes from './Pages/Detalhes'
+import SobreNos from './Pages/SobreNos'
 
 export default function Router(){
     return(
@@ -21,6 +22,7 @@ export default function Router(){
                 <Route path='/avaliar' element={<Avaliar/>}></Route>
                 <Route path='/detalhes' element={<Detalhes/>}></Route>
                 <Route path='/resetpass/:id' element={<PasswordReset/>}></Route>
+                <Route path='/sobrenos' element={<SobreNos/>}></Route>
             </Routes>
         </BrowserRouter>
     )
