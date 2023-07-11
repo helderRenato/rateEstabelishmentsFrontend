@@ -5,6 +5,7 @@ import style from "./style.module.css"
 //Import of Images
 import search from "../../assets/search.svg"
 import Footer from "../../Components/Footer";
+import loading from "../../assets/loading.svg"
 
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ const App = () => {
     const [city, setCity] = useState(null);
     const [estab, setEstab] = useState(null);
     const [datat, setDatat] = useState([]);
+    const [isLoading, setisLoading] = useState(false); 
     
     const nav = useNavigate();
 
@@ -47,6 +49,7 @@ const App = () => {
 
     const handleSubmit1 = (event) => {
         event.preventDefault();
+        setisLoading(true)
         axios({
             method: 'GET',
 
@@ -60,18 +63,12 @@ const App = () => {
             }
         })
             .then((response) => {
-                alert(response.data);
-                console.log(response.data);
-                //setEstab(response.data);
-                //localStorage.setItem('establ', response.data);
                 setDatat(response.data);
             })
             .catch((error) => {
-                console.error(error.response.data);
-                //localStorage.removeItem('establ');
-                //setEstab(null);
+                alert(error.response.data);
             });
-
+        setisLoading(false)
     }
 
     const EstablishmentSelected = (id) => {
@@ -79,6 +76,16 @@ const App = () => {
         nav("/detalhes");
     }
 
+    if (isLoading){
+        return(
+            <div>
+                <NavBar></NavBar>
+                <div className={style.Loading}>
+                    <img src={loading}></img>
+                </div>
+            </div>
+        )
+    }
     return (
         <>
             <NavBar></NavBar>
@@ -86,7 +93,7 @@ const App = () => {
             <div className={style.content}>
                 <div className={style.container}>
                     <div className={style.searchbar}>
-                        <form>
+                        <form onSubmit={(evt) => handleSubmit1(evt)}>
                             <div className={style.filtroDistrito}>
                                 <select value={city} onChange={(evt) => { setCity(evt.target.value) }} >
                                     <optgroup>

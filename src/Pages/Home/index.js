@@ -268,8 +268,8 @@ export default function Home(){
                 (localStorage.getItem("type") == 2)   ? (
                     //Se o utilizador estiver autenticado vamos a apresentar uma página especial para cada 
                     <div>
-                        <div class="container">
-                            <div class="row">
+                        <div className="container">
+                            <div className="row">
                                 <div>
                                     <h1>{est.name}</h1>
                                     <Carousel variant="dark">
@@ -287,10 +287,10 @@ export default function Home(){
                                     
                                     <div className={style.addPhoto}>
                                         <form onSubmit={addPhoto}>
-                                            <div class="form-group">
-                                                <input type="file" class="form-control" onChange={event => setPhoto(event.target.files[0])}></input>
+                                            <div className="form-group">
+                                                <input type="file" className="form-control" onChange={event => setPhoto(event.target.files[0])}></input>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Adicionar Fotografia</button>
+                                            <button type="submit" className="btn btn-primary">Adicionar Fotografia</button>
                                         </form>
                                     </div>
                                     
@@ -300,7 +300,7 @@ export default function Home(){
                                         <p><strong>Cidade: </strong>{est.city}</p>
                                         <p><strong>Nº de telemóvel: </strong>{est.phone}</p>
                                         <p><strong>Tipo de estabelecimento: </strong>{convertEnumTypeToString()}</p>
-                                        <button type="submit" class="btn btn-primary" onClick={handleShow}>Editar Dados</button>
+                                        <button type="submit" className="btn btn-primary" onClick={handleShow}>Editar Dados</button>
                                     </div>
                                     
                                 </div>
@@ -331,16 +331,16 @@ export default function Home(){
                                                     </div>
                                                ) : (
                                                     <form>
-                                                        <div class="form-group">
-                                                            <div class="container">
-                                                                <div class="row">
-                                                                    <div class="col-sm">
-                                                                        <input type={"text"} class="form-control" onChange={event => setResponse(event.target.value)}></input>
+                                                        <div className="form-group">
+                                                            <div className="container">
+                                                                <div className="row">
+                                                                    <div className="col-sm">
+                                                                        <input type={"text"} className="form-control" onChange={event => setResponse(event.target.value)}></input>
                                                                     </div>
-                                                                    <div class="col-sm">
-                                                                        <button type="submit" class="btn btn-primary" onClick={answer}>Responder</button>   
+                                                                    <div className="col-sm">
+                                                                        <button type="submit" className="btn btn-primary" onClick={answer}>Responder</button>   
                                                                     </div>
-                                                                    <div class="col-sm">
+                                                                    <div className="col-sm">
                                                                         <button onClick={() => denuciarComment(comment.id)}>Denunciar</button>  
                                                                     </div>
                                                                 </div>
@@ -396,13 +396,13 @@ export default function Home(){
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
                 <form onSubmit={editarEstablishment}>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label for="nome">Nome</label>
-                        <input type="text" class="form-control" id="nome" required defaultValue={est.name}  onChange={(evt) => { setName(evt.target.value) }}/>
+                        <input type="text" className="form-control" id="nome" required defaultValue={est.name}  onChange={(evt) => { setName(evt.target.value) }}/>
                     </div>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label for="exampleFormControlSelect1">Distrito</label>
-                        <select class="form-control" value={city} defaultValue={est.city} required onChange={(evt) => { setCity(evt.target.value)}}>
+                        <select className="form-control" value={city} defaultValue={est.city} required onChange={(evt) => { setCity(evt.target.value)}}>
                             <optgroup>
                                     {distritos.map(distritos => {
                                         return <option key={distritos.distrito}>{distritos.distrito}</option>
@@ -411,17 +411,17 @@ export default function Home(){
                             </optgroup>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label for="end">Endereço:</label>
-                        <input type="text" class="form-control" required id="end" defaultValue={est.address}  onChange={(evt) => { setAddress(evt.target.value) }}/>
+                        <input type="text" className="form-control" required id="end" defaultValue={est.address}  onChange={(evt) => { setAddress(evt.target.value) }}/>
                     </div>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label for="phone">Telémovel:</label>
-                        <input type="text" class="form-control" required id="phone" defaultValue={est.phone}  onChange={(evt) => { setPhone(evt.target.value) }}/>
+                        <input type="text" className="form-control" required id="phone" defaultValue={est.phone}  onChange={(evt) => { setPhone(evt.target.value) }}/>
                     </div>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label for="exampleFormControlSelect2">Tipo de Estabelecimento</label>
-                        <select class="form-control" value={typeestablishment} defaultValue={est.typeEstablishment} required onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
+                        <select className="form-control" value={typeestablishment} defaultValue={est.typeEstablishment} required onChange={(evt) => { setTypeEstablishment(evt.target.value) }}>
                                     <optgroup>
                                         <option value={0}>Restaurante</option>
                                         <option value={1}>Café</option>
@@ -431,7 +431,7 @@ export default function Home(){
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Editar</button>
+                    <button type="submit" className="btn btn-primary">Editar</button>
                 </form>
                 </Modal.Body>
             </Modal>
