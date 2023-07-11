@@ -207,7 +207,16 @@ const App = () => {
 
                         {!hasRated && (
                             <>
-                                <input value={rate} onChange={(evt) => { setRate(evt.target.value) }}></input>
+                                <strong>Avaliar: </strong>
+                                <select className="form-control" value={rate} defaultValue={1} required onChange={(evt) => { setRate(evt.target.value) }}>
+                                    <optgroup>
+                                        <option value={1}>1</option>
+                                        <option value={2}>2</option>
+                                        <option value={3}>3</option>
+                                        <option value={4}>4</option>
+                                        <option value={5}>5</option>
+                                    </optgroup>
+                                </select>
                                 <button name="ratingButton" className="btn btn-primary" onClick={(evt) => handleSubmit3(evt)} >Avaliar</button>
                             </>
                         )}
@@ -239,7 +248,6 @@ const App = () => {
                                 ) {
                                     return (
                                         <div className={style.comment} key={Comment.id}>
-                                            <p><strong>Username: </strong>{Comment.userFK}</p>
                                             <p><strong>Comentário: </strong>{Comment.text}</p>
                                             <p><strong>Resposta do Estabelecimento:</strong> {Comment.response}</p>
 
@@ -251,7 +259,6 @@ const App = () => {
                                 else {
                                     return (
                                         <div className={style.comment} key={Comment.id}>
-                                            <p><strong>Username: </strong>{Comment.userFK}</p>
                                             <p><strong>Comentário: </strong>{Comment.text}</p>
                                             <p><strong>Resposta do Estabelecimento:</strong> {Comment.response}</p>
                                         </div>

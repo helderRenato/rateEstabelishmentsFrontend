@@ -41,7 +41,7 @@ export default function Home(){
         const phoneNumberRegex = /^(91|92|93|96)\d{7}$/;
         return phoneNumberRegex.test(phoneNumber);
       };
-      
+
     //Esta função vai servir para converter o tipo enum que vem da api a string
     function convertEnumTypeToString(){
         if(est.typeEstablishment == 0){
@@ -328,7 +328,6 @@ export default function Home(){
                                         {comments.map(comment => (
                                             <div className={style.comment}>
                                                 <div>
-                                                    <p><strong>Username: </strong>{}</p>
                                                     <p>{comment.text}</p>
                                                     
                                                 </div>
