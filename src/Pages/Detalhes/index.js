@@ -7,25 +7,34 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Rating } from '@mui/material';
 
 const App = () => {
+
+    //variavel que guarda os valores obtidos do GET Request
     const [datat, setDatat] = useState([]);
+    //vaiavel que guarda o texto do comentario
     const [commen, setCommen] = useState([]);
+    //variavel que guarda o estado do popup
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    //variavel que funciona como flag pra saber se o user ja avaliou o estabelecimento
     const [hasRated, setHasRated] = useState(false);
+    //variavel que guarda o valor da avaliacao do user ao estabelecimento
     const [rate, setRate] = useState(false);
-    const [idcom, setIdcom] = useState([]);
+    //variavel que funciona como flag pra saber se o user ja comentou o estabelecimento
     const [aux, setAux] = useState(false);
 
+    //guardar no objeto coment a userFK, o texto e a establishmentFK
     const coment = {
         UserFK: localStorage.getItem('user'),
         Text: commen,
         EstablishmentFK: localStorage.getItem('Estab'),
     }
 
+    //guardar no objeto rateU a userFK e Stars
     const rateU = {
         UserFK: localStorage.getItem('user'),
         Stars: rate
     }
 
+    //função que calcula a média das ratings do estabelecimento
     const rati = () => {
         let sum = 0;
         if (datat && datat.listRatings && datat.listRatings.length > 0) {
@@ -36,7 +45,7 @@ const App = () => {
             //console.log("Average:", average);
             return average;
         }
-        return 0; // Return 0 as the default average when there are no ratings
+        return 0; //
     };
 
     //buscar establishment
@@ -114,23 +123,20 @@ const App = () => {
     }
 
     //apagar
-    const handleSubmit5 = (event) => {
+    const handleSubmit5 = async (event, idte) => {
         event.preventDefault();
-        axios({
-            method: 'Delete',
-            // url pra apagar
-            url: 'https://localhost:7045/api/commentapi/deleteComment/' + idcom,
+        
+        try {
+          await axios.delete(`https://localhost:7045/api/commentapi/deleteComment/${idte}`, {
             headers: { 'Content-Type': 'application/json' },
-        })
-            .then((response) => {
-                //alert(response.data);
-                console.log(response.data);
-                window.location.reload();
-            })
-            .catch((error) => {
-                console.error(error.response.data);
-            });
-    }
+          });
+          console.log('Comment deleted successfully');
+          window.location.reload();
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+          alert('Failed to delete comment');
+        }
+      };
 
     const handlePopupOpen = () => {
         setIsPopupOpen(true);
@@ -144,14 +150,7 @@ const App = () => {
         handleSubmit();
     }, []);
 
-    const commentOnChange = (idt) => {
-        setIdcom(idt);
-    }
-
-    const buttonDeleteFunction = (event, idte) => {
-        commentOnChange(idte);
-        handleSubmit5(event);
-    }
+    
 
     const convertEnumTypeToString=() =>{
         if(datat.typeEstablishment == 0){
@@ -233,7 +232,7 @@ const App = () => {
                                             <p><strong>Username: </strong>{Comment.userFK}</p>
                                             <p><strong>Comentário: </strong>{Comment.text}</p>
 
-                                            <button className="btn btn-primary" onClick={(evt) => buttonDeleteFunction(evt, Comment.id)}>Apagar</button>
+                                            <button className="btn btn-primary" onClick={(evt) => handleSubmit5(evt, Comment.id)}>Apagar</button>
                                         </div>
                                     );
                                 }

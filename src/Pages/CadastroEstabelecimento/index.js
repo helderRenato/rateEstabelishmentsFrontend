@@ -15,17 +15,7 @@ const DistritoModel = {
 }
 
 const App = () => {
-    /*useEffect(() => {
-        document.addEventListener('deviceready', onDeviceReady, false);
-    }, []);
-  
-    const onDeviceReady = () => {
-      const formulario = document.getElementById('formulario');
-  
-      if (formulario) {
-        // formulario.addEventListener('submit', handleSubmit);
-      }
-    };*/
+    
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -135,7 +125,7 @@ const App = () => {
                                         <option value={true}>Selecione o distrito</option>
 
                                         {distritos.map(distritos => {
-                                            console.log(distritos.distrito)
+                                            //console.log(distritos.distrito)
                                             return <option key={distritos.distrito}>{distritos.distrito}</option>
                                         }
                                         )}
