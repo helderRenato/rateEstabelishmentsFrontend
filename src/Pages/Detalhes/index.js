@@ -48,29 +48,28 @@ const App = () => {
         return 0; //
     };
 
-    //buscar establishment
+    //Buscar dados do establecimento
     const handleSubmit = () => {
         //event.preventDefault();
         axios({
             method: 'GET',
             url: `https://localhost:7045/api/establishmentapi/get/${localStorage.getItem("Estab")}`,
             headers: { 'Content-Type': 'application/json' },
-            params: {
-                id: localStorage.getItem("Estab"),
-            }
+
         })
             .then((response) => {
                 //alert(response.data);
                 console.log(response.data);
                 setDatat(response.data);
 
+                //guardar nas variaveis 'hasRated' e 'aux' se o utilizador ja avaliou e comentou, respetivamente
                 const userRating = response.data.listRatings.find(rating => rating.userFK.toString() == localStorage.getItem("user"));
                 setHasRated(userRating !== undefined);
 
                 const userComment = response.data.listComments.find(comment => comment.userFK.toString() == localStorage.getItem("user"));
                 setAux(userComment !== undefined);
 
-                
+
             })
             .catch((error) => {
                 console.error(error.response.data);
@@ -79,9 +78,9 @@ const App = () => {
 
 
 
-    //comentar
+    //função pra comentar os estabelecimentos
     const handleSubmit2 = (event) => {
-        console.log("erro:", datat.listComments);
+
 
         event.preventDefault();
         axios({
@@ -101,7 +100,7 @@ const App = () => {
             });
     }
 
-    //avaliar
+    //funcao para avaliar estabelecimentos
     const handleSubmit3 = (event) => {
         event.preventDefault();
 
@@ -122,53 +121,59 @@ const App = () => {
             });
     }
 
-    //apagar
+    //funcao para apagar comentarios
     const handleSubmit5 = async (event, idte) => {
         event.preventDefault();
-        
-        try {
-          await axios.delete(`https://localhost:7045/api/commentapi/deleteComment/${idte}`, {
-            headers: { 'Content-Type': 'application/json' },
-          });
-          console.log('Comment deleted successfully');
-          window.location.reload();
-        } catch (error) {
-          console.error('Error deleting comment:', error);
-          alert('Failed to delete comment');
-        }
-      };
 
+        try {
+            await axios.delete(`https://localhost:7045/api/commentapi/deleteComment/${idte}`, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            console.log('Comment deleted successfully');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Failed to delete comment');
+        }
+    };
+
+    //funcao para por a variavel isPopupOpen em 'true'
     const handlePopupOpen = () => {
         setIsPopupOpen(true);
     }
 
+    //funcao para por a variavel isPopupOpen em 'false'
     const handlePopupClose = () => {
         setIsPopupOpen(false);
     }
 
+    //chamar a funcao handlesubmit assim que a pagina for aberta
     useEffect(() => {
         handleSubmit();
     }, []);
 
-    
 
-    const convertEnumTypeToString=() =>{
-        if(datat.typeEstablishment == 0){
+
+    //funcao que retorna uma string de caracters consoante o valor contido em 'datat.typeEstablishment'
+    const convertEnumTypeToString = () => {
+        if (datat.typeEstablishment == 0) {
             return "Restaurante"
-        }else if(datat.typeEstablishment == 1){
+        } else if (datat.typeEstablishment == 1) {
             return "Café"
-        }else if(datat.typeEstablishment == 2){
+        } else if (datat.typeEstablishment == 2) {
             return "Bar"
-        }else{
+        } else {
             return "Hotel"
         }
     }
+
     return (
         <>
             <NavBar></NavBar>
             <div className={style.container}>
                 <div className={style.content}>
 
+                    {/*apresentar um carroussel com as imagens do estabelecimento*/}
                     <Carousel variant="dark">
                         {datat.listPhotos && datat.listPhotos.length > 0 && datat.listPhotos.map(photo => (
                             <Carousel.Item>
@@ -176,6 +181,7 @@ const App = () => {
                             </Carousel.Item>
                         ))}
                     </Carousel>
+                    {/*apresentar os dados do estabelecimento*/}
                     <p><strong>Nome: </strong>{datat.name}</p>
                     <p><strong>Email: </strong>{datat.email}</p>
                     <p><strong>Nº de telemóvel: </strong>{datat.phone}</p>
@@ -183,10 +189,10 @@ const App = () => {
                     <p><strong>Cidade: </strong>{datat.city}</p>
                     <p><strong>Tipo de estabelecimento: </strong>{convertEnumTypeToString()}</p>
 
+                    {/*aprensentar a avaliacao do estabelecimento
+                    caso o user nao tenha avaliado o estabelecimento, aparece um input e um botao para faze-lo
+                    */}
                     <div>
-
-
-
                         <div className={style.rating}>
                             <strong>Avaliação geral: </strong>
                             {datat.listRatings ? (
@@ -207,6 +213,7 @@ const App = () => {
                         )}
                     </div>
 
+                    {/*popup que serve para comentar*/}
                     {isPopupOpen && (
                         <div className={style.popupContainer}>
                             <div className={style.popupContent}>
@@ -220,7 +227,10 @@ const App = () => {
                         </div>
                     )}
 
-                    <div>
+                    {/*apresentar os comentario do estabelecimento e as suas respostas
+                    caso o user nao tenha comentado, aparece um botao para poder faze-lo*/}
+                    <h4>Comentários</h4>
+                    <div className={style.comments}>
                         {datat.listComments && datat.listComments.length > 0 &&
                             datat.listComments.map((Comment) => {
 
@@ -228,9 +238,10 @@ const App = () => {
                                     Comment.userFK && Comment.userFK == localStorage.getItem("user")
                                 ) {
                                     return (
-                                        <div key={Comment.id}>
+                                        <div className={style.comment} key={Comment.id}>
                                             <p><strong>Username: </strong>{Comment.userFK}</p>
                                             <p><strong>Comentário: </strong>{Comment.text}</p>
+                                            <p><strong>Resposta do Estabelecimento:</strong> {Comment.response}</p>
 
                                             <button className="btn btn-primary" onClick={(evt) => handleSubmit5(evt, Comment.id)}>Apagar</button>
                                         </div>
@@ -239,9 +250,10 @@ const App = () => {
 
                                 else {
                                     return (
-                                        <div key={Comment.id}>
+                                        <div className={style.comment} key={Comment.id}>
                                             <p><strong>Username: </strong>{Comment.userFK}</p>
                                             <p><strong>Comentário: </strong>{Comment.text}</p>
+                                            <p><strong>Resposta do Estabelecimento:</strong> {Comment.response}</p>
                                         </div>
                                     );
                                 }
